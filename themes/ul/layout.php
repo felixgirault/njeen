@@ -1,0 +1,2 @@
+layout
+<?php echo $page; ?>
