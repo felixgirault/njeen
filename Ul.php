@@ -1,10 +1,21 @@
 <?php
 
-require_once 'markdown/markdown.php';
+require_once 'vendor/autoload.php';
 
-define( 'UL_ROOT', dirname( __FILE__ ) . DIRECTORY_SEPARATOR );
-define( 'UL_ARTICLES', UL_ROOT . 'articles' . DIRECTORY_SEPARATOR );
-define( 'UL_THEMES', UL_ROOT . 'themes' . DIRECTORY_SEPARATOR );
+use dflydev\markdown\MarkdownExtraParser;
+
+
+
+/**
+ *	Paths.
+ */
+
+define( 'UL_DS', DIRECTORY_SEPARATOR );
+define( 'UL_ROOT', dirname( __FILE__ ) . UL_DS );
+define( 'UL_ARTICLES', UL_ROOT . 'articles' . UL_DS );
+define( 'UL_COMPILED', UL_ROOT . 'compiled' . UL_DS );
+define( 'UL_COMPILED_ARTICLES', UL_COMPILED . 'articles' . UL_DS );
+define( 'UL_THEMES', UL_ROOT . 'themes' . UL_DS );
 
 
 
@@ -15,7 +26,9 @@ define( 'UL_THEMES', UL_ROOT . 'themes' . DIRECTORY_SEPARATOR );
 class Ul {
 
 	/**
+	 *	Settings.
 	 *
+	 *	@var array
 	 */
 
 	protected $_settings = array( );
@@ -23,42 +36,87 @@ class Ul {
 
 
 	/**
+	 *	Meta informations.
 	 *
+	 *	@var array
 	 */
 
-	protected $_articles = array( );
+	protected $_meta = array( );
 
 
 
 	/**
+	 *	Callbacks.
 	 *
+	 *	@var array
+	 */
+
+	protected $_callbacks = array(
+		'afterCompilation' => null
+	);
+
+
+
+	/**
+	 *	Constructor.
 	 */
 
 	public function __construct( ) {
 
-		$this->_settings = $this->_loadJson( 'settings' );
-		$this->_listArticles( );
+		$this->_settings = $this->_loadJson( UL_ROOT . 'settings.json' );
+		$this->_meta = $this->_loadJson( UL_COMPILED . 'meta.json' );
+
+		$this->_compile( );
 	}
 
 
 
 	/**
+	 *	Destructor.
+	 */
+
+	public function __destruct( ) {
+
+		$this->_saveJson( UL_COMPILED . 'meta.json', $this->_meta );
+	}
+
+
+
+	/**
+	 *	Loads and returns a JSON document.
 	 *
+	 *	@param string $path Path to the file.
+	 *	@return array JSON data.
 	 */
 
 	protected function _loadJson( $path ) {
 
-		$contents = @file_get_contents( UL_ROOT . $path . '.json' );
-
-		if ( $contents !== false ) {
-			$json = json_decode( $contents, true );
-
-			if ( $json !== null ) {
-				return $json;
-			}
+		if ( !file_exists( $path )) {
+			return array( );
 		}
 
-		return array( );
+		$contents = file_get_contents( $path );
+		$data = json_decode( $contents, true );
+
+		if ( $data === null ) {
+			throw new Exception( "Error parsing JSON file: $path." );
+		}
+
+		return $data;
+	}
+
+
+
+	/**
+	 *	Saves a JSON document.
+	 *
+	 *	@param string $path Path to the file.
+	 *	@param array $data Data to encode.
+	 */
+
+	protected function _saveJson( $path, $data ) {
+
+		file_put_contents( $path, json_encode( $data, JSON_PRETTY_PRINT ));
 	}
 
 
@@ -67,14 +125,44 @@ class Ul {
 	 *
 	 */
 
-	protected function _listArticles( ) {
+	protected function _compile( ) {
 
-		$files = scandir( UL_ARTICLES );
+		$Parser = new MarkdownExtraParser( );
+		$Iterator = new DirectoryIterator( UL_ARTICLES );
 
-		foreach ( $files as $file ) {
-			if ( strpos( $file, '.md' ) !== false ) {
-				$this->_articles[ ] = basename( $file, '.md' );
+		foreach ( $Iterator as $Article ) {
+			if ( $Article->getExtension( ) !== 'md' ) {
+				continue;
 			}
+
+			$id = $Article->getBasename( '.md' );
+			$mtime = $Article->getMTime( );
+
+			if ( isset( $this->_meta[ $id ])) {
+				if ( $this->_meta[ $id ]['mtime'] === $mtime ) {
+					continue;
+				}
+			}
+
+			$this->_meta[ $id ]['mtime'] = $mtime;
+			$contents = file_get_contents( $Article->getPathname( ));
+
+			list( $header, $markdown ) = preg_split( '/\n\s*\n/mi', $contents, 2 );
+
+			$metas = explode( PHP_EOL, $header );
+
+			foreach ( $metas as $meta ) {
+				list( $key, $value ) = explode( ':', $meta, 2 );
+				$this->_meta[ $id ][ $key ] = trim( $value );
+			}
+
+			$html = $Parser->transformMarkdown( $markdown );
+
+			if ( is_callable( $this->_callbacks['afterCompilation'])) {
+				$html = call_user_func( $this->_callbacks['afterCompilation'], $html );
+			}
+
+			file_put_contents( UL_COMPILED_ARTICLES . $id . '.html', $html );
 		}
 	}
 
@@ -103,7 +191,7 @@ class Ul {
 	protected function _renderPage( ) {
 
 		$path = $_SERVER['REQUEST_URI'];
-		$request = array( );
+		//$request = array( );
 
 		if ( $path == '/' ) {
 			return $this->_render( 'home' );
@@ -115,13 +203,13 @@ class Ul {
 			return $this->_render( 'articles' );
 		}
 
-		$articlePattern = '#^' . $this->_settings['articlesPath'] . '/(.*)$#i';
+		$articlePattern = '#^' . $this->_settings['articlesPath'] . '/(?<id>.*)$#i';
 
 		if ( preg_match( $articlePattern, $path, $matches )) {
-			$article = $matches[ 1 ];
+			$id = $matches['id'];
 
-			if ( in_array( $article, $this->_articles )) {
-				return $this->_renderArticle( $article );
+			if ( isset( $this->_meta[ $id ])) {
+				return $this->_renderArticle( $id );
 			}
 		}
 
@@ -134,22 +222,10 @@ class Ul {
 	 *
 	 */
 
-	protected function _renderArticle( $article ) {
+	protected function _renderArticle( $id ) {
 
-		$path = UL_ARTICLES . $article . '.md';
-		$markdown = file_get_contents( $path );
-
-		if ( $markdown === false ) {
-			return $this->_render( '404' );
-		}
-
-		$vars = $this->_loadJson( 'articles' . DIRECTORY_SEPARATOR . $article );
-
-		if ( !isset( $vars['title'])) {
-			$vars['title'] = $article;
-		}
-
-		$vars['markdown'] = Markdown( $markdown );
+		$vars = $this->_meta[ $id ];
+		$vars['body'] = file_get_contents( UL_COMPILED_ARTICLES . $id . '.html' );
 
 		return $this->_render( 'article', $vars );
 	}
@@ -165,8 +241,11 @@ class Ul {
 		extract( $___vars, EXTR_SKIP );
 		ob_start( );
 
-		include UL_THEMES . $this->_settings['theme']
-			. DIRECTORY_SEPARATOR . $___fileName . '.php';
+		include UL_THEMES
+			. $this->_settings['theme']
+			. DIRECTORY_SEPARATOR
+			. $___fileName
+			. '.php';
 
 		return ob_get_clean( );
 	}
