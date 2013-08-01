@@ -1,4 +1,4 @@
 Ul
 ==
 
-Ultra light blog engine.
+Ultralight blog engine.
