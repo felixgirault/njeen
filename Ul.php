@@ -12,9 +12,8 @@ use dflydev\markdown\MarkdownExtraParser;
 
 define( 'UL_DS', DIRECTORY_SEPARATOR );
 define( 'UL_ROOT', dirname( __FILE__ ) . UL_DS );
-define( 'UL_ARTICLES', UL_ROOT . 'articles' . UL_DS );
+define( 'UL_ENTRIES', UL_ROOT . 'entries' . UL_DS );
 define( 'UL_COMPILED', UL_ROOT . 'compiled' . UL_DS );
-define( 'UL_COMPILED_ARTICLES', UL_COMPILED . 'articles' . UL_DS );
 define( 'UL_THEMES', UL_ROOT . 'themes' . UL_DS );
 
 
@@ -46,13 +45,21 @@ class Ul {
 
 
 	/**
-	 *	Callbacks.
+	 *
+	 */
+
+	protected $_vars = array( );
+
+
+
+	/**
+	 *	Compilers.
 	 *
 	 *	@var array
 	 */
 
-	protected $_callbacks = array(
-		'afterCompilation' => null
+	protected $_compilers = array(
+		'Ul::compileMarkdown'
 	);
 
 
@@ -127,42 +134,108 @@ class Ul {
 
 	protected function _compile( ) {
 
-		$Parser = new MarkdownExtraParser( );
-		$Iterator = new DirectoryIterator( UL_ARTICLES );
+		foreach ( $this->_settings['entries'] as $type => $path ) {
+			$directory = UL_ENTRIES . $type;
 
-		foreach ( $Iterator as $Article ) {
-			if ( $Article->getExtension( ) !== 'md' ) {
-				continue;
+			if ( !is_dir( $directory )) {
+				mkdir( $directory );
 			}
 
-			$id = $Article->getBasename( '.md' );
-			$mtime = $Article->getMTime( );
+			$Iterator = new DirectoryIterator( $directory );
 
-			if ( isset( $this->_meta[ $id ])) {
-				if ( $this->_meta[ $id ]['mtime'] === $mtime ) {
+			foreach ( $Iterator as $Entry ) {
+				if ( $Entry->getExtension( ) !== 'md' ) {
 					continue;
 				}
+
+				$id = $Entry->getBasename( '.md' );
+				$mtime = $Entry->getMTime( );
+
+				if ( isset( $this->_meta[ $type ][ $id ])) {
+					if ( $this->_meta[ $type ][ $id ]['mtime'] === $mtime ) {
+						continue;
+					}
+				}
+
+				$this->_meta[ $type ][ $id ]['mtime'] = $mtime;
+				$contents = file_get_contents( $Entry->getPathname( ));
+
+				list( $header, $text ) = preg_split( '/\n\s*\n/mi', $contents, 2 );
+
+				$metas = explode( PHP_EOL, $header );
+
+				foreach ( $metas as $meta ) {
+					list( $key, $value ) = explode( ':', $meta, 2 );
+					$this->_meta[ $type ][ $id ][ $key ] = trim( $value );
+				}
+
+				foreach ( $this->_compilers as $compiler ) {
+					if ( is_callable( $compiler )) {
+						$text = call_user_func( $compiler, $text );
+					}
+				}
+
+				file_put_contents(
+					UL_COMPILED . $type . UL_DS . $id . '.html',
+					$text
+				);
 			}
+		}
+	}
 
-			$this->_meta[ $id ]['mtime'] = $mtime;
-			$contents = file_get_contents( $Article->getPathname( ));
 
-			list( $header, $markdown ) = preg_split( '/\n\s*\n/mi', $contents, 2 );
 
-			$metas = explode( PHP_EOL, $header );
+	/**
+	 *
+	 */
 
-			foreach ( $metas as $meta ) {
-				list( $key, $value ) = explode( ':', $meta, 2 );
-				$this->_meta[ $id ][ $key ] = trim( $value );
-			}
+	public static function compileMarkdown( $text ) {
 
-			$html = $Parser->transformMarkdown( $markdown );
+		static $Parser = null;
 
-			if ( is_callable( $this->_callbacks['afterCompilation'])) {
-				$html = call_user_func( $this->_callbacks['afterCompilation'], $html );
-			}
+		if ( $Parser === null ) {
+			$Parser = new MarkdownExtraParser( );
+		}
 
-			file_put_contents( UL_COMPILED_ARTICLES . $id . '.html', $html );
+		return $Parser->transformMarkdown( $text );
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function has( $name ) {
+
+		return isset( $this->_vars[ $name ]);
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function get( $name, $default ) {
+
+		return $this->has( $name )
+			? $this->_vars[ $name ]
+			: $default;
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function set( $name, $value = null ) {
+
+		if ( is_array( $name )) {
+			$this->_vars = array_merge( $this->_vars, $name );
+		} else {
+			$this->_vars[ $name ] = $value;
 		}
 	}
 
@@ -174,12 +247,10 @@ class Ul {
 
 	public function page( ) {
 
-		return $this->_render(
-			'layout',
-			array(
-				'page' => $this->_renderPage( )
-			)
-		);
+		$page = $this->_renderPage( );
+		$this->set( 'page', $page );
+
+		return $this->render( 'layout' );
 	}
 
 
@@ -190,30 +261,37 @@ class Ul {
 
 	protected function _renderPage( ) {
 
-		$path = $_SERVER['REQUEST_URI'];
-		//$request = array( );
+		$request = $_SERVER['REQUEST_URI'];
 
-		if ( $path == '/' ) {
-			return $this->_render( 'home' );
+		if ( $request == '/' ) {
+			return $this->render( 'home' );
 		}
 
-		$articlesPattern = '#^' . $this->_settings['articlesPath'] . '/?$#i';
+		foreach ( $this->_settings['entries'] as $type => $path ) {
+			$listPattern = '#^' . $path . '/?$#';
+var_dump( $request, $listPattern, preg_match( $listPattern, $request ));
+			if ( preg_match( $listPattern, $request )) {
+				return $this->render( $type );
+			}
 
-		if ( preg_match( $articlesPattern, $path )) {
-			return $this->_render( 'articles' );
-		}
+			$singlePattern = '#^' . $path . '/(?<id>[a-zA-Z0-9-]+)$#';
 
-		$articlePattern = '#^' . $this->_settings['articlesPath'] . '/(?<id>.*)$#i';
+			if ( preg_match( $singlePattern, $request, $matches )) {
+				$id = $matches['id'];
 
-		if ( preg_match( $articlePattern, $path, $matches )) {
-			$id = $matches['id'];
+				if ( isset( $this->_meta[ $type ][ $id ])) {
+					$this->set( $this->_meta[ $type ][ $id ]);
+					$this->set(
+						'body',
+						file_get_contents( UL_COMPILED . $type . UL_DS . $id . '.html' )
+					);
 
-			if ( isset( $this->_meta[ $id ])) {
-				return $this->_renderArticle( $id );
+					return $this->render( $type );
+				}
 			}
 		}
 
-		return $this->_render( '404' );
+		return $this->error( 404 );
 	}
 
 
@@ -222,12 +300,9 @@ class Ul {
 	 *
 	 */
 
-	protected function _renderArticle( $id ) {
+	public function error( $code ) {
 
-		$vars = $this->_meta[ $id ];
-		$vars['body'] = file_get_contents( UL_COMPILED_ARTICLES . $id . '.html' );
-
-		return $this->_render( 'article', $vars );
+		return $this->render( $code );
 	}
 
 
@@ -236,16 +311,12 @@ class Ul {
 	 *
 	 */
 
-	protected function _render( $___fileName, $___vars = array( )) {
+	public function render( $___fileName ) {
 
-		extract( $___vars, EXTR_SKIP );
+		extract( $this->_vars, EXTR_SKIP );
 		ob_start( );
 
-		include UL_THEMES
-			. $this->_settings['theme']
-			. DIRECTORY_SEPARATOR
-			. $___fileName
-			. '.php';
+		include UL_THEMES . $this->_settings['theme'] . UL_DS . $___fileName . '.php';
 
 		return ob_get_clean( );
 	}

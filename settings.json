@@ -1,5 +1,7 @@
 {
-	"pagesPath": "/",
-	"articlesPath": "/articles",
+	"entries": {
+		"articles": "/articles",
+		"pages": "/"
+	},
 	"theme": "ul"
 }
