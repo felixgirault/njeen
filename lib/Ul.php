@@ -1,20 +1,6 @@
 <?php
 
-require_once 'vendor/autoload.php';
-
 use dflydev\markdown\MarkdownExtraParser;
-
-
-
-/**
- *	Paths.
- */
-
-define( 'UL_DS', DIRECTORY_SEPARATOR );
-define( 'UL_ROOT', dirname( __FILE__ ) . UL_DS );
-define( 'UL_ENTRIES', UL_ROOT . 'entries' . UL_DS );
-define( 'UL_COMPILED', UL_ROOT . 'compiled' . UL_DS );
-define( 'UL_THEMES', UL_ROOT . 'themes' . UL_DS );
 
 
 
@@ -27,20 +13,20 @@ class Ul {
 	/**
 	 *	Settings.
 	 *
-	 *	@var array
+	 *	@var Settings
 	 */
 
-	protected $_settings = array( );
+	protected $_settings = null;
 
 
 
 	/**
 	 *	Meta informations.
 	 *
-	 *	@var array
+	 *	@var Settings
 	 */
 
-	protected $_meta = array( );
+	protected $_meta = null;
 
 
 
@@ -48,7 +34,7 @@ class Ul {
 	 *
 	 */
 
-	protected $_vars = array( );
+	protected $_Theme = null;
 
 
 
@@ -70,8 +56,10 @@ class Ul {
 
 	public function __construct( ) {
 
-		$this->_settings = $this->_loadJson( UL_ROOT . 'settings.json' );
-		$this->_meta = $this->_loadJson( UL_COMPILED . 'meta.json' );
+		$this->_settings = new Settings( UL_ROOT . 'settings.json' );
+		$this->_meta = new Settings( UL_COMPILED . 'meta.json' );
+
+		$this->_Theme = new Theme( $this->_settings['theme']);
 
 		$this->_compile( );
 	}
@@ -84,46 +72,7 @@ class Ul {
 
 	public function __destruct( ) {
 
-		$this->_saveJson( UL_COMPILED . 'meta.json', $this->_meta );
-	}
-
-
-
-	/**
-	 *	Loads and returns a JSON document.
-	 *
-	 *	@param string $path Path to the file.
-	 *	@return array JSON data.
-	 */
-
-	protected function _loadJson( $path ) {
-
-		if ( !file_exists( $path )) {
-			return array( );
-		}
-
-		$contents = file_get_contents( $path );
-		$data = json_decode( $contents, true );
-
-		if ( $data === null ) {
-			throw new Exception( "Error parsing JSON file: $path." );
-		}
-
-		return $data;
-	}
-
-
-
-	/**
-	 *	Saves a JSON document.
-	 *
-	 *	@param string $path Path to the file.
-	 *	@param array $data Data to encode.
-	 */
-
-	protected function _saveJson( $path, $data ) {
-
-		file_put_contents( $path, json_encode( $data, JSON_PRETTY_PRINT ));
+		$this->_meta->save( );
 	}
 
 
@@ -206,51 +155,12 @@ class Ul {
 	 *
 	 */
 
-	public function has( $name ) {
-
-		return isset( $this->_vars[ $name ]);
-	}
-
-
-
-	/**
-	 *
-	 */
-
-	public function get( $name, $default ) {
-
-		return $this->has( $name )
-			? $this->_vars[ $name ]
-			: $default;
-	}
-
-
-
-	/**
-	 *
-	 */
-
-	public function set( $name, $value = null ) {
-
-		if ( is_array( $name )) {
-			$this->_vars = array_merge( $this->_vars, $name );
-		} else {
-			$this->_vars[ $name ] = $value;
-		}
-	}
-
-
-
-	/**
-	 *
-	 */
-
 	public function page( ) {
 
 		$page = $this->_renderPage( );
-		$this->set( 'page', $page );
+		$this->_Theme->set( 'page', $page );
 
-		return $this->render( 'layout' );
+		return $this->_Theme->part( 'layout' );
 	}
 
 
@@ -264,14 +174,14 @@ class Ul {
 		$request = $_SERVER['REQUEST_URI'];
 
 		if ( $request == '/' ) {
-			return $this->render( 'home' );
+			return $this->_Theme->part( 'home' );
 		}
 
 		foreach ( $this->_settings['entries'] as $type => $path ) {
 			$listPattern = '#^' . $path . '/?$#';
 var_dump( $request, $listPattern, preg_match( $listPattern, $request ));
 			if ( preg_match( $listPattern, $request )) {
-				return $this->render( $type );
+				return $this->_Theme->part( "$type/index" );
 			}
 
 			$singlePattern = '#^' . $path . '/(?<id>[a-zA-Z0-9-]+)$#';
@@ -280,13 +190,13 @@ var_dump( $request, $listPattern, preg_match( $listPattern, $request ));
 				$id = $matches['id'];
 
 				if ( isset( $this->_meta[ $type ][ $id ])) {
-					$this->set( $this->_meta[ $type ][ $id ]);
-					$this->set(
+					$this->_Theme->set( $this->_meta[ $type ][ $id ]);
+					$this->_Theme->set(
 						'body',
 						file_get_contents( UL_COMPILED . $type . UL_DS . $id . '.html' )
 					);
 
-					return $this->render( $type );
+					return $this->_Theme->part( "$type/single" );
 				}
 			}
 		}
@@ -302,22 +212,8 @@ var_dump( $request, $listPattern, preg_match( $listPattern, $request ));
 
 	public function error( $code ) {
 
-		return $this->render( $code );
-	}
+		http_response_code( $code );
 
-
-
-	/**
-	 *
-	 */
-
-	public function render( $___fileName ) {
-
-		extract( $this->_vars, EXTR_SKIP );
-		ob_start( );
-
-		include UL_THEMES . $this->_settings['theme'] . UL_DS . $___fileName . '.php';
-
-		return ob_get_clean( );
+		return $this->_Theme->part( "errors/$code" );
 	}
 }
