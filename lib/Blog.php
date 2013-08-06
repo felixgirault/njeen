@@ -15,13 +15,7 @@ use dflydev\markdown\MarkdownExtraParser;
 
 class Blog {
 
-	/**
-	 *	Settings.
-	 *
-	 *	@var Settings
-	 */
-
-	protected $_settings = null;
+	use Configurable;
 
 
 
@@ -32,6 +26,14 @@ class Blog {
 	 */
 
 	protected $_index = null;
+
+
+
+	/**
+	 *
+	 */
+
+	protected $_Router = null;
 
 
 
@@ -59,12 +61,12 @@ class Blog {
 	 *	Constructor.
 	 */
 
-	public function __construct( ) {
+	public function __construct( $vars, $Router ) {
 
-		$this->_settings = FileSystem::readJson( NJ_ROOT . 'settings.json' );
+		$this->_vars = $vars;
 		$this->_index = FileSystem::readJson( NJ_COMPILED . 'index.json' );
-
-		$this->_Theme = new Theme( $this->_settings['blog']['theme']);
+		$this->_Router = $Router;
+		$this->_Theme = new Theme( $this->_vars['theme']);
 
 		$this->_compile( );
 	}
@@ -88,8 +90,8 @@ class Blog {
 
 	public function __get( $name ) {
 
-		return isset( $this->_settings['blog'][ $name ])
-			? $this->_settings['blog'][ $name ]
+		return isset( $this->_vars[ $name ])
+			? $this->_vars[ $name ]
 			: '';
 	}
 
@@ -101,7 +103,7 @@ class Blog {
 
 	protected function _compile( ) {
 
-		foreach ( $this->_settings['entries']['types'] as $type => $path ) {
+		foreach ( $this->_Router->entryTypes( ) as $type ) {
 			$directory = NJ_ENTRIES . $type;
 
 			FileSystem::ensureDirectoryExists( $directory );
@@ -125,6 +127,7 @@ class Blog {
 				$this->_index[ $type ][ $id ] = $mtime;
 
 				$Entry = new Entry( $type, $id, Entry::raw );
+				$Entry->setDefaults( $this->defaults );
 				$Entry->compile( $this->_compilers );
 				$Entry->save( );
 			}
@@ -171,33 +174,35 @@ class Blog {
 
 	protected function _renderPage( ) {
 
-		$request = $_SERVER['REQUEST_URI'];
+		$Request = $this->_Router->request( );
+		$page = '';
 
-		if ( $request == '/' ) {
-			return $this->_Theme->part( 'home' );
-		}
+		switch ( $Request->type ) {
+			case 'home':
+				$page = $this->_Theme->part( 'home' );
+				break;
 
-		foreach ( $this->_settings['entries']['types'] as $type => $path ) {
-			$listPattern = '#^' . $path . '/?$#';
+			case 'index':
+				$type = $Request->data['type'];
+				$page = $this->_Theme->part( "$type/index" );
+				break;
 
-			if ( preg_match( $listPattern, $request )) {
-				return $this->_Theme->part( "$type/index" );
-			}
-
-			$singlePattern = '#^' . $path . '/(?<id>' . $this->_settings['entries']['id'] . ')$#';
-
-			if ( preg_match( $singlePattern, $request, $matches )) {
-				$id = $matches['id'];
+			case 'single':
+				$type = $Request->data['type'];
+				$id = $Request->data['id'];
 
 				if ( isset( $this->_index[ $type ][ $id ])) {
 					$this->_Theme->set( 'Entry', new Entry( $type, $id ));
-
-					return $this->_Theme->part( "$type/single" );
+					$page = $this->_Theme->part( "$type/single" );
 				}
-			}
+				break;
+
+			case 'error':
+				$page = $this->error( $Request->data['code']);
+				break;
 		}
 
-		return $this->error( 404 );
+		return $page;
 	}
 
 

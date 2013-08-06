@@ -1,16 +1,16 @@
 {
 	"blog": {
 		"title": "Njeen",
-		"theme": "njeen"
-	},
-	"entries": {
-		"types": {
-			"articles": "/articles",
-			"pages": "/"
-		},
+		"theme": "njeen",
 		"defaults": {
 			"author": "Félix Girault"
-		},
-		"id": "[a-zA-Z0-9-]+"
+		}
+	},
+	"router": {
+		"id": "[a-zA-Z0-9-]+",
+		"entries": {
+			"articles": "/articles",
+			"pages": "/"
+		}
 	}
 }

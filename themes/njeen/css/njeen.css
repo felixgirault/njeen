@@ -3,7 +3,7 @@
  */
 
 html {
-	background: #fff;
+	background: #fafafa;
 	color: #222;
 	font-family: Arial, Helvetica, "Liberation Sans", FreeSans, sans-serif;
 	font-size: 1.25em;
@@ -53,11 +53,12 @@ a:visited {
 	-webkit-box-shadow: 0 -0.6em 0.5em -0.5em #000 inset;
 	-moz-box-shadow: 0 -0.6em 0.5em -0.5em #000 inset;
 	box-shadow: 0 -0.6em 0.5em -0.5em #000 inset;
-	text-shadow: -1px -2px 0.6em #000;
+	text-shadow: -1px -2px 0 #000;
 }
 
 .page {
-	margin: 6em 0;
+	padding: 6em 0;
+	background: #fff;
 }
 
 .page-footer {
@@ -70,15 +71,12 @@ a:visited {
 	font-style: italic;
 	font-size: 0.8em;
 	line-height: 1.875em;
+	text-shadow: -1px -2px 0 #fff;
 }
 
 .page-footer a {
 	color: #aaa;
 	font-weight: bold;
-}
-
-.page-footer a {
-	color: #aaa;
 }
 
 

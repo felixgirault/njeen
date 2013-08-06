@@ -13,11 +13,7 @@
 
 class Theme {
 
-	/**
-	 *
-	 */
-
-	protected $_name = '';
+	use Configurable;
 
 
 
@@ -25,7 +21,7 @@ class Theme {
 	 *
 	 */
 
-	protected $_vars = array( );
+	public $name = '';
 
 
 
@@ -35,7 +31,15 @@ class Theme {
 
 	public function __construct( $name ) {
 
-		$this->_name = $name;
+		$this->name = $name;
+
+		if ( !is_dir( $this->path( ))) {
+			throw new Exception( );
+		}
+
+		if ( !$this->hasPart( 'layout' )) {
+			throw new Exception( );
+		}
 	}
 
 
@@ -44,10 +48,15 @@ class Theme {
 	 *
 	 */
 
-	public function path( $file ) {
+	public function path( $file = false ) {
 
-		return NJ_THEMES . $this->_name
-			. NJ_DS . str_replace( '/', NJ_DS, $file );
+		$path = NJ_THEMES . $this->name;
+
+		if ( is_string( $file )) {
+			$path .= NJ_DS . str_replace( '/', NJ_DS, $file );
+		}
+
+		return $path;
 	}
 
 
@@ -58,46 +67,7 @@ class Theme {
 
 	public function url( $file ) {
 
-		return NJ_THEMES_URL . '/' . $this->_name . '/' . $file;
-	}
-
-
-
-	/**
-	 *
-	 */
-
-	public function has( $name ) {
-
-		return isset( $this->_vars[ $name ]);
-	}
-
-
-
-	/**
-	 *
-	 */
-
-	public function get( $name, $default = null ) {
-
-		return $this->has( $name )
-			? $this->_vars[ $name ]
-			: $default;
-	}
-
-
-
-	/**
-	 *
-	 */
-
-	public function set( $name, $value = null ) {
-
-		if ( is_array( $name )) {
-			$this->_vars = array_merge( $this->_vars, $name );
-		} else {
-			$this->_vars[ $name ] = $value;
-		}
+		return NJ_THEMES_URL . '/' . $this->name . '/' . $file;
 	}
 
 

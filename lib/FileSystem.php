@@ -44,7 +44,15 @@ class FileSystem {
 	public static function writeFile( $path, $contents ) {
 
 		self::ensureDirectoryExists( dirname( $path ));
-		file_put_contents( $path, $contents );
+
+		$File = new SplFileObject( $path, 'c' );
+
+		if ( $File->flock( LOCK_EX )) {
+			$File->ftruncate( 0 );
+			$File->fwrite( $contents );
+			$File->fflush( );
+			$File->flock( LOCK_UN );
+		}
 	}
 
 
@@ -56,7 +64,7 @@ class FileSystem {
 	 *	@return boolean Whether the file .
 	 */
 
-	public function readJson( $path ) {
+	public static function readJson( $path ) {
 
 		$data = null;
 
@@ -74,7 +82,7 @@ class FileSystem {
 	 *	Saves a JSON document.
 	 */
 
-	public function writeJson( $path, $data ) {
+	public static function writeJson( $path, $data ) {
 
 		FileSystem::writeFile( $path, json_encode( $data, JSON_PRETTY_PRINT ));
 	}

@@ -13,6 +13,10 @@
 
 class Entry {
 
+	use Configurable;
+
+
+
 	/**
 	 *
 	 */
@@ -26,42 +30,14 @@ class Entry {
 	 *
 	 */
 
-	protected $_type = '';
-
-
-
-	/**
-	 *
-	 */
-
-	protected $_id = '';
-
-
-
-	/**
-	 *
-	 */
-
-	protected $_meta = array( );
-
-
-
-	/**
-	 *
-	 */
-
-	protected $_body = '';
-
-
-
-	/**
-	 *
-	 */
-
 	public function __construct( $type, $id, $format = self::compiled ) {
 
-		$this->_type = $type;
-		$this->_id = $id;
+		$this->set( array(
+			'type' => $type,
+			'id' => $id,
+			'meta' => array( ),
+			'body' => ''
+		));
 
 		switch ( $format ) {
 			case self::raw:
@@ -81,37 +57,23 @@ class Entry {
 	 *
 	 */
 
-	public function __get( $name ) {
-
-		if ( $name === 'body' ) {
-			return $this->_body;
-		}
-
-		return isset( $this->_meta[ $name ])
-			? $this->_meta[ $name ]
-			: '';
-	}
-
-
-
-	/**
-	 *
-	 */
-
 	protected function _loadRaw( ) {
 
-		$body = FileSystem::readFile(
-			NJ_ENTRIES . $this->_type . NJ_DS . $this->_id . '.md'
+		$contents = FileSystem::readFile(
+			NJ_ENTRIES . $this->type . NJ_DS . $this->id . '.md'
 		);
 
-		list( $header, $this->_body ) = preg_split( '/\n\s*\n/mi', $body, 2 );
+		list( $header, $body ) = preg_split( '/\n\s*\n/mi', $contents, 2 );
 
 		$lines = explode( PHP_EOL, $header );
+		$meta = array( );
 
 		foreach ( $lines as $line ) {
 			list( $key, $value ) = explode( ':', $line, 2 );
-			$this->_meta[ trim( $key )] = trim( $value );
+			$meta[ trim( $key )] = trim( $value );
 		}
+
+		$this->set( compact( 'body', 'meta' ));
 	}
 
 
@@ -122,10 +84,12 @@ class Entry {
 
 	protected function _loadCompiled( ) {
 
-		$path = NJ_COMPILED . $this->_type . NJ_DS . $this->_id;
+		$path = NJ_COMPILED . $this->type . NJ_DS . $this->id;
 
-		$this->_meta = FileSystem::readJson( $path . '.json' );
-		$this->_body = FileSystem::readFile( $path . '.html' );
+		$this->set( array(
+			'meta' => FileSystem::readJson( $path . '.json' ),
+			'body' => FileSystem::readFile( $path . '.html' )
+		));
 	}
 
 
@@ -138,7 +102,7 @@ class Entry {
 
 		foreach ( $compilers as $compiler ) {
 			if ( is_callable( $compiler )) {
-				$this->_body = call_user_func( $compiler, $this->_body );
+				$this->body = call_user_func( $compiler, $this->body );
 			}
 		}
 	}
@@ -151,9 +115,9 @@ class Entry {
 
 	public function save( ) {
 
-		$path = NJ_COMPILED . $this->_type . NJ_DS . $this->_id;
+		$path = NJ_COMPILED . $this->type . NJ_DS . $this->id;
 
-		FileSystem::writeJson( $path . '.json', $this->_meta );
-		FileSystem::writeFile( $path . '.html', $this->_body );
+		FileSystem::writeJson( $path . '.json', $this->meta );
+		FileSystem::writeFile( $path . '.html', $this->body );
 	}
 }
