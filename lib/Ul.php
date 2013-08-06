@@ -88,8 +88,8 @@ class Ul {
 
 	public function __get( $name ) {
 
-		return isset( $this->_settings[ $name ])
-			? $this->_settings[ $name ]
+		return isset( $this->_settings['blog'][ $name ])
+			? $this->_settings['blog'][ $name ]
 			: '';
 	}
 

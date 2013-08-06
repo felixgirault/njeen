@@ -12,7 +12,7 @@
 	<body>
 		<header class="page-header">
 			<div class="container">
-				<p>Njeen</p>
+				<p><?php echo $Blog->title; ?></p>
 			</div>
 		</header>
 
