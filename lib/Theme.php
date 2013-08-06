@@ -1,7 +1,8 @@
 <?php
 
 /**
- *
+ *	@author Félix Girault <felix.girault@gmail.com>
+ *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
 
@@ -57,7 +58,7 @@ class Theme {
 
 	public function url( $file ) {
 
-		return UL_THEMES_URL . $this->_name . '/' . $file;
+		return UL_THEMES_URL . '/' . $this->_name . '/' . $file;
 	}
 
 
@@ -105,12 +106,23 @@ class Theme {
 	 *
 	 */
 
-	public function part( $___fileName ) {
+	public function hasPart( $path ) {
+
+		return file_exists( $this->path( $path . '.php' ));
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function part( $___path ) {
 
 		extract( $this->_vars, EXTR_SKIP );
 		ob_start( );
 
-		include $this->path( $___fileName . '.php' );
+		include $this->path( $___path . '.php' );
 
 		return ob_get_clean( );
 	}

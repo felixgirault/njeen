@@ -1,5 +1,10 @@
 <?php
 
+/**
+ *	@author Félix Girault <felix.girault@gmail.com>
+ *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
+ */
+
 use dflydev\markdown\MarkdownExtraParser;
 
 
@@ -26,7 +31,7 @@ class Ul {
 	 *	@var Settings
 	 */
 
-	protected $_meta = null;
+	protected $_index = null;
 
 
 
@@ -56,10 +61,10 @@ class Ul {
 
 	public function __construct( ) {
 
-		$this->_settings = new Settings( UL_ROOT . 'settings.json' );
-		$this->_meta = new Settings( UL_COMPILED . 'meta.json' );
+		$this->_settings = FileSystem::readJson( UL_ROOT . 'settings.json' );
+		$this->_index = FileSystem::readJson( UL_COMPILED . 'index.json' );
 
-		$this->_Theme = new Theme( $this->_settings['theme']);
+		$this->_Theme = new Theme( $this->_settings['blog']['theme']);
 
 		$this->_compile( );
 	}
@@ -72,7 +77,20 @@ class Ul {
 
 	public function __destruct( ) {
 
-		$this->_meta->save( );
+		FileSystem::writeJson( UL_COMPILED . 'index.json', $this->_index );
+	}
+
+
+
+	/**
+	 *	Destructor.
+	 */
+
+	public function __get( $name ) {
+
+		return isset( $this->_settings[ $name ])
+			? $this->_settings[ $name ]
+			: '';
 	}
 
 
@@ -83,13 +101,10 @@ class Ul {
 
 	protected function _compile( ) {
 
-		foreach ( $this->_settings['entries'] as $type => $path ) {
+		foreach ( $this->_settings['entries']['types'] as $type => $path ) {
 			$directory = UL_ENTRIES . $type;
 
-			if ( !is_dir( $directory )) {
-				mkdir( $directory );
-			}
-
+			FileSystem::ensureDirectoryExists( $directory );
 			$Iterator = new DirectoryIterator( $directory );
 
 			foreach ( $Iterator as $Entry ) {
@@ -100,34 +115,18 @@ class Ul {
 				$id = $Entry->getBasename( '.md' );
 				$mtime = $Entry->getMTime( );
 
-				if ( isset( $this->_meta[ $type ][ $id ])) {
-					if ( $this->_meta[ $type ][ $id ]['mtime'] === $mtime ) {
-						continue;
-					}
+				if (
+					isset( $this->_index[ $type ][ $id ])
+					&& ( $this->_index[ $type ][ $id ] === $mtime )
+				) {
+					continue;
 				}
 
-				$this->_meta[ $type ][ $id ]['mtime'] = $mtime;
-				$contents = file_get_contents( $Entry->getPathname( ));
+				$this->_index[ $type ][ $id ] = $mtime;
 
-				list( $header, $text ) = preg_split( '/\n\s*\n/mi', $contents, 2 );
-
-				$metas = explode( PHP_EOL, $header );
-
-				foreach ( $metas as $meta ) {
-					list( $key, $value ) = explode( ':', $meta, 2 );
-					$this->_meta[ $type ][ $id ][ $key ] = trim( $value );
-				}
-
-				foreach ( $this->_compilers as $compiler ) {
-					if ( is_callable( $compiler )) {
-						$text = call_user_func( $compiler, $text );
-					}
-				}
-
-				file_put_contents(
-					UL_COMPILED . $type . UL_DS . $id . '.html',
-					$text
-				);
+				$Entry = new Entry( $type, $id, Entry::raw );
+				$Entry->compile( $this->_compilers );
+				$Entry->save( );
 			}
 		}
 	}
@@ -157,8 +156,9 @@ class Ul {
 
 	public function page( ) {
 
-		$page = $this->_renderPage( );
-		$this->_Theme->set( 'page', $page );
+		$this->_Theme->set( 'page', $this->_renderPage( ));
+		$this->_Theme->set( 'Theme', $this->_Theme );
+		$this->_Theme->set( 'Blog', $this );
 
 		return $this->_Theme->part( 'layout' );
 	}
@@ -177,24 +177,20 @@ class Ul {
 			return $this->_Theme->part( 'home' );
 		}
 
-		foreach ( $this->_settings['entries'] as $type => $path ) {
+		foreach ( $this->_settings['entries']['types'] as $type => $path ) {
 			$listPattern = '#^' . $path . '/?$#';
-var_dump( $request, $listPattern, preg_match( $listPattern, $request ));
+
 			if ( preg_match( $listPattern, $request )) {
 				return $this->_Theme->part( "$type/index" );
 			}
 
-			$singlePattern = '#^' . $path . '/(?<id>[a-zA-Z0-9-]+)$#';
+			$singlePattern = '#^' . $path . '/(?<id>' . $this->_settings['entries']['id'] . ')$#';
 
 			if ( preg_match( $singlePattern, $request, $matches )) {
 				$id = $matches['id'];
 
-				if ( isset( $this->_meta[ $type ][ $id ])) {
-					$this->_Theme->set( $this->_meta[ $type ][ $id ]);
-					$this->_Theme->set(
-						'body',
-						file_get_contents( UL_COMPILED . $type . UL_DS . $id . '.html' )
-					);
+				if ( isset( $this->_index[ $type ][ $id ])) {
+					$this->_Theme->set( 'Entry', new Entry( $type, $id ));
 
 					return $this->_Theme->part( "$type/single" );
 				}
@@ -214,6 +210,8 @@ var_dump( $request, $listPattern, preg_match( $listPattern, $request ));
 
 		http_response_code( $code );
 
-		return $this->_Theme->part( "errors/$code" );
+		return $this->_Theme->hasPart( "errors/$code" )
+			? $this->_Theme->part( "errors/$code" )
+			: '';
 	}
 }
