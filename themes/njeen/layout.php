@@ -6,7 +6,7 @@
 
 		<title><?php echo $Blog->title; ?></title>
 
-		<link rel="stylesheet" type="text/css" href="<?php echo $Theme->url( 'css/ul.css' ); ?>" />
+		<link rel="stylesheet" type="text/css" href="<?php echo $Theme->url( 'css/njeen.css' ); ?>" />
 	</head>
 
 	<body>
