@@ -1,6 +1,9 @@
-title: Second article
+title: Lorem ipsum
 author: Jean-Michel Jarre
 tags: toto
+
+Lorem ipsum
+===========
 
 Proin eget tortor risus. Pellentesque in ipsum id orci porta dapibus.
 Cras ultricies ligula sed magna dictum porta. Proin eget tortor risus.
