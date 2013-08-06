@@ -1,5 +1,5 @@
 {
-	"name": "fg/ul",
+	"name": "fg/njeen",
 	"type": "library",
 	"description": "Ultralight blog engine.",
 	"version": "0.0.1",
@@ -13,7 +13,7 @@
 		"blog"
 	],
 	"licence": "BSD-2-Clause",
-	"homepage": "http://github.com/felixgirault/ul",
+	"homepage": "http://github.com/felixgirault/njeen",
 	"require": {
 		"php": ">=5.3.0",
 		"dflydev/markdown": "1.0.*"
