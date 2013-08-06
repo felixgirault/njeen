@@ -61,8 +61,8 @@ class Blog {
 
 	public function __construct( ) {
 
-		$this->_settings = FileSystem::readJson( UL_ROOT . 'settings.json' );
-		$this->_index = FileSystem::readJson( UL_COMPILED . 'index.json' );
+		$this->_settings = FileSystem::readJson( NJ_ROOT . 'settings.json' );
+		$this->_index = FileSystem::readJson( NJ_COMPILED . 'index.json' );
 
 		$this->_Theme = new Theme( $this->_settings['blog']['theme']);
 
@@ -77,7 +77,7 @@ class Blog {
 
 	public function __destruct( ) {
 
-		FileSystem::writeJson( UL_COMPILED . 'index.json', $this->_index );
+		FileSystem::writeJson( NJ_COMPILED . 'index.json', $this->_index );
 	}
 
 
@@ -102,7 +102,7 @@ class Blog {
 	protected function _compile( ) {
 
 		foreach ( $this->_settings['entries']['types'] as $type => $path ) {
-			$directory = UL_ENTRIES . $type;
+			$directory = NJ_ENTRIES . $type;
 
 			FileSystem::ensureDirectoryExists( $directory );
 			$Iterator = new DirectoryIterator( $directory );

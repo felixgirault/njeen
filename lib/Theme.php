@@ -46,8 +46,8 @@ class Theme {
 
 	public function path( $file ) {
 
-		return UL_THEMES . $this->_name
-			. UL_DS . str_replace( '/', UL_DS, $file );
+		return NJ_THEMES . $this->_name
+			. NJ_DS . str_replace( '/', NJ_DS, $file );
 	}
 
 
@@ -58,7 +58,7 @@ class Theme {
 
 	public function url( $file ) {
 
-		return UL_THEMES_URL . '/' . $this->_name . '/' . $file;
+		return NJ_THEMES_URL . '/' . $this->_name . '/' . $file;
 	}
 
 

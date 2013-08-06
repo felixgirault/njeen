@@ -101,7 +101,7 @@ class Entry {
 	protected function _loadRaw( ) {
 
 		$body = FileSystem::readFile(
-			UL_ENTRIES . $this->_type . UL_DS . $this->_id . '.md'
+			NJ_ENTRIES . $this->_type . NJ_DS . $this->_id . '.md'
 		);
 
 		list( $header, $this->_body ) = preg_split( '/\n\s*\n/mi', $body, 2 );
@@ -122,7 +122,7 @@ class Entry {
 
 	protected function _loadCompiled( ) {
 
-		$path = UL_COMPILED . $this->_type . UL_DS . $this->_id;
+		$path = NJ_COMPILED . $this->_type . NJ_DS . $this->_id;
 
 		$this->_meta = FileSystem::readJson( $path . '.json' );
 		$this->_body = FileSystem::readFile( $path . '.html' );
@@ -151,7 +151,7 @@ class Entry {
 
 	public function save( ) {
 
-		$path = UL_COMPILED . $this->_type . UL_DS . $this->_id;
+		$path = NJ_COMPILED . $this->_type . NJ_DS . $this->_id;
 
 		FileSystem::writeJson( $path . '.json', $this->_meta );
 		FileSystem::writeFile( $path . '.html', $this->_body );
