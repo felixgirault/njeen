@@ -12,7 +12,14 @@
 	<body>
 		<header class="page-header">
 			<div class="container">
-				<p><?php echo $Blog->title; ?></p>
+				<p class="blog-title"><?php echo Html::aLink( $Blog->title, 'Blog home', $Router->home( )); ?></p>
+
+				<nav class="blog-menu">
+					<ul>
+						<li><?php echo Html::aLink( 'Pages', 'All pages', $Router->index( 'pages' )); ?></li>
+						<li><?php echo Html::aLink( 'Articles', 'All articles', $Router->index( 'articles' )); ?></li>
+					</ul>
+				</nav>
 			</div>
 		</header>
 

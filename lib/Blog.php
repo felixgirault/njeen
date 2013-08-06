@@ -49,10 +49,8 @@ class Blog {
 	 *	Compilers.
 	 *
 	 *	@var array
-	 */
-
 	protected $_compilers = array(
-		'Ul::compileMarkdown'
+		'Blog::compileMarkdown'
 	);
 
 
@@ -159,9 +157,11 @@ class Blog {
 
 	public function page( ) {
 
-		$this->_Theme->set( 'page', $this->_renderPage( ));
+		$this->_Theme->set( 'Router', $this->_Router );
 		$this->_Theme->set( 'Theme', $this->_Theme );
 		$this->_Theme->set( 'Blog', $this );
+
+		$this->_Theme->set( 'page', $this->_renderPage( ));
 
 		return $this->_Theme->part( 'layout' );
 	}
@@ -184,7 +184,9 @@ class Blog {
 
 			case 'index':
 				$type = $Request->data['type'];
-				$page = $this->_Theme->part( "$type/index" );
+				$page = $this->_Theme->hasPart( "$type/index" )
+					? $this->_Theme->part( "$type/index" )
+					: $this->_Theme->part( 'entries/index' );
 				break;
 
 			case 'single':
@@ -193,7 +195,9 @@ class Blog {
 
 				if ( isset( $this->_index[ $type ][ $id ])) {
 					$this->_Theme->set( 'Entry', new Entry( $type, $id ));
-					$page = $this->_Theme->part( "$type/single" );
+					$page = $this->_Theme->hasPart( "$type/single" )
+						? $this->_Theme->part( "$type/single" )
+						: $this->_Theme->part( 'entries/single' );
 				}
 				break;
 

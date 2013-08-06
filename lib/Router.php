@@ -42,6 +42,10 @@ class Router {
 	public function __construct( array $vars = array( )) {
 
 		$this->_vars = $vars;
+
+		foreach ( $this->_vars['entries'] as &$path ) {
+			$path = rtrim( $path, '/' );
+		}
 	}
 
 
@@ -89,7 +93,7 @@ class Router {
 
 	public function home( ) {
 
-		return UL_ROOT_URL;
+		return NJ_ROOT_URL;
 	}
 
 
@@ -100,7 +104,7 @@ class Router {
 
 	public function index( $type ) {
 
-		return UL_ROOT_URL . '/' . $type;
+		return NJ_ROOT_URL . $this->entries[ $type ];
 	}
 
 
@@ -109,9 +113,9 @@ class Router {
 	 *
 	 */
 
-	public function entry( $type, $id ) {
+	public function single( $type, $id ) {
 
-		return UL_ROOT_URL . '/' . $type . '/' . $id;
+		return NJ_ROOT_URL . $this->entries[ $type ] . '/' . $id;
 	}
 
 

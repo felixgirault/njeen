@@ -73,7 +73,8 @@ class Entry {
 			$meta[ trim( $key )] = trim( $value );
 		}
 
-		$this->set( compact( 'body', 'meta' ));
+		$this->set( $meta );
+		$this->set( 'body', $body );
 	}
 
 
@@ -86,10 +87,8 @@ class Entry {
 
 		$path = NJ_COMPILED . $this->type . NJ_DS . $this->id;
 
-		$this->set( array(
-			'meta' => FileSystem::readJson( $path . '.json' ),
-			'body' => FileSystem::readFile( $path . '.html' )
-		));
+		$this->set( FileSystem::readJson( $path . '.json' ));
+		$this->set( 'body', FileSystem::readFile( $path . '.html' ));
 	}
 
 
