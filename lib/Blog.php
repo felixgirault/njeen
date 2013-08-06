@@ -13,7 +13,7 @@ use dflydev\markdown\MarkdownExtraParser;
  *
  */
 
-class Ul {
+class Blog {
 
 	/**
 	 *	Settings.
