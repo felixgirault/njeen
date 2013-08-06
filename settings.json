@@ -1,7 +1,16 @@
 {
-	"entries": {
-		"articles": "/articles",
-		"pages": "/"
+	"blog": {
+		"name": "Njeen",
+		"theme": "ul"
 	},
-	"theme": "ul"
+	"entries": {
+		"types": {
+			"articles": "/articles",
+			"pages": "/"
+		},
+		"defaults": {
+			"author": "Félix Girault"
+		},
+		"id": "[a-zA-Z0-9-]+"
+	}
 }

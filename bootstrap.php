@@ -18,6 +18,21 @@ define( 'UL_THEMES', UL_ROOT . 'themes' . UL_DS );
 
 
 /**
+ *	URLs.
+ */
+
+$path = $_SERVER['SCRIPT_NAME'];
+$path = substr( $path, 0, strrpos( $path, '/' ) ?: 0 );
+$http = ( empty( $_SERVER['HTTPS']) || ( @$_SERVER['HTTPS'] === 'off' ));
+
+define( 'UL_ROOT_URL', ( $http ? 'http://' : 'https://' ) . $_SERVER['HTTP_HOST'] . $path );
+define( 'UL_THEMES_URL', UL_ROOT_URL . '/themes' );
+
+unset( $path, $http );
+
+
+
+/**
  *	Autoload.
  */
 
