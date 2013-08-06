@@ -2,6 +2,102 @@
  *
  */
 
+html {
+	background: #fff;
+	color: #222;
+	font-family: Arial, Helvetica, "Liberation Sans", FreeSans, sans-serif;
+	font-size: 1.25em;
+	line-height: 1.5em;
+}
+
+html, body, p {
+	margin: 0;
+	padding: 0;
+}
+
+a {
+	color: #d00;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:visited {
+	color: #a00;
+}
+
+
+
+/**
+ *
+ */
+
+.container {
+	margin: 0 auto;
+	padding: 0 1.5em;
+	max-width: 35em;
+}
+
+
+
+/**
+ *
+ */
+
 .page-header {
+	padding: 2em 0;
 	background: #222;
+	color: #fff;
+	-webkit-box-shadow: 0 -0.6em 0.5em -0.5em #000 inset;
+	-moz-box-shadow: 0 -0.6em 0.5em -0.5em #000 inset;
+	box-shadow: 0 -0.6em 0.5em -0.5em #000 inset;
+	text-shadow: -1px -2px 0.6em #000;
+}
+
+.page-header-branding {
+	font-size: 2em;
+}
+
+.page {
+	padding: 4em 0;
+}
+
+.page-footer {
+	border-top: 1px solid #ddd;
+	padding: 4em 0;
+}
+
+.page-footer p {
+	color: #aaa;
+	font-style: italic;
+	font-size: 0.8em;
+	line-height: 1.875em;
+}
+
+
+
+/**
+ *
+ */
+
+.entry-header {
+	margin-bottom: 1.5em;
+}
+
+.entry-title {
+	margin: 0;
+	font-size: 2.5em;
+	line-height: 1.2em;
+}
+
+.entry-author {
+	color: #aaa;
+	font-size: 0.8em;
+	line-height: 1.875em;
+}
+
+.entry-body p {
+	margin-bottom: 1.5em;
 }
