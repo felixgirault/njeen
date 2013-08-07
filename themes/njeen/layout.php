@@ -16,8 +16,8 @@
 
 				<nav class="blog-menu">
 					<ul>
-						<li><?php echo Html::aLink( 'Pages', 'All pages', $Router->index( 'pages' )); ?></li>
 						<li><?php echo Html::aLink( 'Articles', 'All articles', $Router->index( 'articles' )); ?></li>
+						<li><?php echo Html::aLink( 'About', 'About Njeen', $Router->single( 'pages', 'about' )); ?></li>
 					</ul>
 				</nav>
 			</div>

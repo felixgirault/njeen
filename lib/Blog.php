@@ -163,9 +163,12 @@ class Blog {
 		$this->_Theme->set( 'Theme', $this->_Theme );
 		$this->_Theme->set( 'Blog', $this );
 
-		$this->_Theme->set( 'page', $this->_renderPage( ));
-
-		return $this->_Theme->part( 'layout' );
+		return $this->_Theme->part(
+			'layout',
+			array(
+				'page' => $this->_renderPage( )
+			)
+		);
 	}
 
 

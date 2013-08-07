@@ -87,9 +87,9 @@ class Theme {
 	 *
 	 */
 
-	public function part( $___path ) {
+	public function part( $___path, array $___vars = array( )) {
 
-		extract( $this->_vars, EXTR_SKIP );
+		extract( array_merge( $this->_vars, $___vars ), EXTR_SKIP );
 		ob_start( );
 
 		include $this->path( $___path . '.php' );

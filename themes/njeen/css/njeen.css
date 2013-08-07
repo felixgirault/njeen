@@ -51,7 +51,6 @@ a:visited {
  */
 
 .page-header {
-	outline: 1px solid #eee;
 	padding: 1.5em 0;
 	background: #222;
 	color: #fff;
@@ -106,7 +105,7 @@ a:visited {
 }
 
 .page-footer {
-	outline: 1px solid #eee;
+	border-top: 1px solid #eee;
 	padding: 3em 0;
 }
 

@@ -11,6 +11,10 @@
 		"entries": {
 			"articles": "/articles",
 			"pages": "/"
+		},
+		"listings": {
+			"author": "authors",
+			"tags": "tags"
 		}
 	}
 }
