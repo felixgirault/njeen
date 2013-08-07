@@ -1,6 +1,7 @@
 title: Hello World!
 author: Félix Girault
 excerpt: This article was written for testing purpose.
+tags:, php, article, hello
 
 Proin eget tortor risus. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.
 Vivamus suscipit tortor eget felis porttitor volutpat. Sed porttitor lectus nibh.

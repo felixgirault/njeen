@@ -49,6 +49,8 @@ class Blog {
 	 *	Compilers.
 	 *
 	 *	@var array
+	 */
+
 	protected $_compilers = array(
 		'Blog::compileMarkdown'
 	);

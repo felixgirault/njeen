@@ -24,7 +24,7 @@ class Html {
 	public static function link( $text, $url, array $attributes = array( )) {
 
 		$attributes['href'] = $url;
-		return self::tag( 'a', $attributes, $text );
+		return self::tag( 'a', $text, $attributes );
 	}
 
 
@@ -45,16 +45,20 @@ class Html {
 	 *
 	 */
 
-	public static function tag( $name, $attributes, $contents = '' ) {
+	public static function tag( $name, $contents = '', array $attributes = array( )) {
 
 		$attributesString = '';
 
-		foreach ( $attributes as $attributeName => $attributeValue ) {
-			if ( is_numeric( $attributeName )) {
-				$attributeName = $attributeValue;
+		foreach ( $attributes as $attrName => $attrValue ) {
+			if ( is_array( $attrValue )) {
+				$attrValue = implode( ' ', $attrValue );
 			}
 
-			$attributesString .= ' ' . $attributeName .'="' . $attributeValue . '"';
+			if ( is_numeric( $attrName )) {
+				$attrName = $attrValue;
+			}
+
+			$attributesString .= ' ' . $attrName .'="' . $attrValue . '"';
 		}
 
 		$tag = '<' . $name . $attributesString;

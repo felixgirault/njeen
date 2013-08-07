@@ -30,14 +30,34 @@ class Entry {
 	 *
 	 */
 
+	public $type = '';
+
+
+
+	/**
+	 *
+	 */
+
+	public $id = '';
+
+
+
+	/**
+	 *
+	 */
+
+	public $body = '';
+
+
+
+	/**
+	 *
+	 */
+
 	public function __construct( $type, $id, $format = self::compiled ) {
 
-		$this->set( array(
-			'type' => $type,
-			'id' => $id,
-			'meta' => array( ),
-			'body' => ''
-		));
+		$this->type = $type;
+		$this->id = $id;
 
 		switch ( $format ) {
 			case self::raw:
@@ -63,7 +83,7 @@ class Entry {
 			NJ_ENTRIES . $this->type . NJ_DS . $this->id . '.md'
 		);
 
-		list( $header, $body ) = preg_split( '/\n\s*\n/mi', $contents, 2 );
+		list( $header, $this->body ) = preg_split( '/\n\s*\n/mi', $contents, 2 );
 
 		$lines = explode( PHP_EOL, $header );
 		$meta = array( );
@@ -74,7 +94,6 @@ class Entry {
 		}
 
 		$this->set( $meta );
-		$this->set( 'body', $body );
 	}
 
 
@@ -88,7 +107,7 @@ class Entry {
 		$path = NJ_COMPILED . $this->type . NJ_DS . $this->id;
 
 		$this->set( FileSystem::readJson( $path . '.json' ));
-		$this->set( 'body', FileSystem::readFile( $path . '.html' ));
+		$this->body = FileSystem::readFile( $path . '.html' );
 	}
 
 
@@ -116,7 +135,7 @@ class Entry {
 
 		$path = NJ_COMPILED . $this->type . NJ_DS . $this->id;
 
-		FileSystem::writeJson( $path . '.json', $this->meta );
+		FileSystem::writeJson( $path . '.json', $this->_vars );
 		FileSystem::writeFile( $path . '.html', $this->body );
 	}
 }
