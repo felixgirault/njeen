@@ -20,7 +20,7 @@ class FileSystem {
 	public static function ensureDirectoryExists( $directory ) {
 
 		if ( !is_dir( $directory )) {
-			mkdir( $directory, 777, true );
+			mkdir( $directory, 0777, true );
 		}
 	}
 
@@ -32,7 +32,21 @@ class FileSystem {
 
 	public static function readFile( $path ) {
 
-		return file_get_contents( $path ) ?: '';
+		try {
+			$File = new SplFileObject( $path, 'r' );
+		} catch ( RuntimeException $Exception ) {
+			return '';
+		}
+
+		$File->flock( LOCK_SH );
+		$lines = array( );
+
+		while ( !$File->eof( )) {
+			$lines[ ] = $File->fgets( );
+		}
+
+		$File->flock( LOCK_UN );
+		return implode( '', $lines );
 	}
 
 
@@ -46,13 +60,16 @@ class FileSystem {
 		self::ensureDirectoryExists( dirname( $path ));
 
 		$File = new SplFileObject( $path, 'c' );
+		$File->flock( LOCK_EX );
 
-		if ( $File->flock( LOCK_EX )) {
-			$File->ftruncate( 0 );
-			$File->fwrite( $contents );
-			$File->fflush( );
-			$File->flock( LOCK_UN );
-		}
+		$success = $File->ftruncate( 0 )
+			&& $File->fwrite( $contents )
+			&& $File->fflush( );
+
+		$File->flock( LOCK_UN );
+
+		chmod( $File->getRealPath( ), 0664 );
+		return $success;
 	}
 
 

@@ -30,13 +30,14 @@ class Njeen {
 		try {
 			self::_setupDi( );
 			self::_loadPlugins( );
+			self::_compile( );
 
 			echo self::$_Di->get( 'Njeen.Blog' )->page(
 				self::$_Di->get( 'Njeen.Router' ),
 				self::$_Di->get( 'Njeen.Entries' )
 			);
 		} catch ( Exception $Exception ) {
-
+			var_dump( $Exception );
 		}
 	}
 
@@ -105,5 +106,18 @@ class Njeen {
 				}
 			}
 		}
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	protected static function _compile( ) {
+
+		self::$_Di->get( 'Njeen.Entries' )->compile(
+			self::$_Di->get( 'Njeen.Compiler' )
+		);
 	}
 }

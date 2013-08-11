@@ -20,7 +20,7 @@ class MarkdownPlugin {
 
 	public static function setup( &$Di ) {
 
-		$Di->set( 'Markdown.Parser', Di::unique( function( $Di, &$Compiler ) {
+		$Di->set( 'Markdown.Parser', Di::unique( function( $Di ) {
 			return new MarkdownExtraParser( );
 		}));
 

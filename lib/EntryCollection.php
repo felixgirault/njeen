@@ -49,7 +49,7 @@ class EntryCollection {
 	 *
 	 */
 
-	protected $_index = '';
+	protected $_Index = '';
 
 
 
@@ -68,7 +68,7 @@ class EntryCollection {
 		$this->_raw = $raw;
 		$this->_compiled = $compiled;
 
-		$this->_index = new Settings( $compiled . 'index.json' );
+		$this->_Index = new Settings( $compiled . 'index.json' );
 	}
 
 
@@ -79,7 +79,7 @@ class EntryCollection {
 
 	public function shouldCompile( ) {
 
-		$diff = time( ) - $this->_index->lastModification( );
+		$diff = time( ) - $this->_Index->lastModification( );
 		return $diff > $this->_treshold;
 	}
 
@@ -96,32 +96,38 @@ class EntryCollection {
 		foreach ( $this->_types as $type ) {
 			$directory = $this->_raw . $type;
 
-			if ( is_dir( $directory )) {
+			try {
 				$Directory = new DirectoryIterator( $directory );
+			} catch ( UnexpectedValueException $Exception ) {
+				continue;
+			}
 
-				foreach ( $Directory as $File ) {
-					$extension = $File->getExtension( );
-					$id = $File->getBasename( ".$extension" );
-					$mtime = $File->getMTime( );
+			foreach ( $Directory as $File ) {
+				if ( $File->isDir( )) {
+					continue;
+				}
 
-					if (
-						isset( $this->_index[ $type ][ $id ])
-						&& ( $this->_index[ $type ][ $id ] === $mtime )
-					) {
-						$index[ $type ][ $id ] = $this->_index[ $type ][ $id ];
-					} else {
-						$index[ $type ][ $id ] = $mtime;
+				$extension = $File->getExtension( );
+				$id = $File->getBasename( ".$extension" );
+				$mtime = $File->getMTime( );
 
-						$Entry = $this->loadRaw( $type, $id, $extension );
-						$Compiler->compile( $Entry );
-						$this->saveEntry( $Entry );
-					}
+				if (
+					isset( $this->_Index[ $type ][ $id ])
+					&& ( $this->_Index[ $type ][ $id ] === $mtime )
+				) {
+					$index[ $type ][ $id ] = $this->_Index[ $type ][ $id ];
+				} else {
+					$index[ $type ][ $id ] = $mtime;
+
+					$Entry = $this->loadRaw( $type, $id, $extension );
+					$Compiler->compile( $Entry );
+					$this->save( $Entry );
 				}
 			}
 		}
 
-		$this->_index->setAll( $index );
-		$this->_index->save( );
+		$this->_Index->setAll( $index );
+		$this->_Index->save( );
 	}
 
 
@@ -132,7 +138,7 @@ class EntryCollection {
 
 	public function exists( $type, $id ) {
 
-		return isset( $this->_index[ $type ][ $id ]);
+		return isset( $this->_Index[ $type ][ $id ]);
 	}
 
 
@@ -150,14 +156,14 @@ class EntryCollection {
 		list( $header, $body ) = preg_split( '/\n\s*\n/mi', $contents, 2 );
 
 		$lines = explode( PHP_EOL, $header );
-		$meta = array( );
+		$vars = array( );
 
 		foreach ( $lines as $line ) {
 			list( $key, $value ) = explode( ':', $line, 2 );
-			$meta[ trim( $key )] = trim( $value );
+			$vars[ trim( $key )] = trim( $value );
 		}
 
-		return new Entry( $type, $id, $meta, $body );
+		return new Entry( $type, $id, $vars, $body );
 	}
 
 
@@ -188,7 +194,7 @@ class EntryCollection {
 
 		$path = $this->_compiled . $Entry->type . NJ_DS . $Entry->id;
 
-		FileSystem::writeJson( $path . '.json', $Entry->meta );
+		FileSystem::writeJson( $path . '.json', $Entry->vars );
 		FileSystem::writeFile( $path . '.html', $Entry->body );
 	}
 }
