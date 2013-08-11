@@ -14,6 +14,7 @@ define( 'NJ_LIB', NJ_ROOT . 'lib' . NJ_DS );
 define( 'NJ_ENTRIES', NJ_ROOT . 'entries' . NJ_DS );
 define( 'NJ_COMPILED', NJ_ROOT . 'compiled' . NJ_DS );
 define( 'NJ_THEMES', NJ_ROOT . 'themes' . NJ_DS );
+define( 'NJ_PLUGINS', NJ_ROOT . 'plugins' . NJ_DS );
 
 
 

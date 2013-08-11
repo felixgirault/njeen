@@ -11,27 +11,21 @@
  *
  */
 
-class Request {
+class Router extends Configurable {
 
-	public $type = '';
-	public $data = array( );
+	/**
+	 *
+	 */
 
-	public function __construct( $type, array $data = array( )) {
-
-		$this->type = $type;
-		$this->data = $data;
-	}
-}
+	protected $_rootUrl = '';
 
 
 
-/**
- *
- */
+	/**
+	 *	Translates between settings and theme entry types.
+	 */
 
-class Router {
-
-	use Configurable;
+	protected $_map = array( );
 
 
 
@@ -39,13 +33,31 @@ class Router {
 	 *
 	 */
 
-	public function __construct( array $vars = array( )) {
+	public function __construct( array $vars, $rootUrl = NJ_ROOT_URL ) {
 
-		$this->_vars = $vars;
+		$this->_rootUrl = $rootUrl;
+		$this->vars = $vars;
 
-		foreach ( $this->_vars['entries'] as &$path ) {
+		foreach ( $this->vars['entries'] as &$path ) {
 			$path = rtrim( $path, '/' );
 		}
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function __call( $type, $arguments ) {
+
+		if ( !isset( $this->entries[ $type ])) {
+			throw new BadMethodCallException(
+				"The '$type' entry type doesn't exist."
+			);
+		}
+
+		return $this->single( $type, array_shift( $arguments ));
 	}
 
 
@@ -59,63 +71,24 @@ class Router {
 		$request = $_SERVER['REQUEST_URI'];
 
 		if ( $request == '/' ) {
-			return new Request( 'home' );
+			return Request::home( );
 		}
 
 		foreach ( $this->entries as $type => $path ) {
 			$listPattern = '#^' . $path . '/?$#';
 
 			if ( preg_match( $listPattern, $request )) {
-				return new Request( 'index', array( 'type' => $type ));
+				return Request::index( $type );
 			}
 
 			$singlePattern = '#^' . $path . '/(?<id>' . $this->id . ')$#';
 
 			if ( preg_match( $singlePattern, $request, $matches )) {
-				return new Request(
-					'single',
-					array(
-						'type' => $type,
-						'id' => $matches['id']
-					)
-				);
+				return Request::single( $type, $matches['id']);
 			}
 		}
 
-		return new Request( 'error', array( 'code' => 404 ));
-	}
-
-
-
-	/**
-	 *
-	 */
-
-	public function home( ) {
-
-		return NJ_ROOT_URL;
-	}
-
-
-
-	/**
-	 *
-	 */
-
-	public function index( $type ) {
-
-		return NJ_ROOT_URL . $this->entries[ $type ];
-	}
-
-
-
-	/**
-	 *
-	 */
-
-	public function single( $type, $id ) {
-
-		return NJ_ROOT_URL . $this->entries[ $type ] . '/' . $id;
+		return Request::error( 404 );
 	}
 
 
@@ -127,5 +100,38 @@ class Router {
 	public function entryTypes( ) {
 
 		return array_keys( $this->entries );
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function home( ) {
+
+		return $this->_rootUrl;
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function index( $type ) {
+
+		return $this->_rootUrl . $this->entries[ $type ];
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function single( $type, $id ) {
+
+		return $this->_rootUrl . $this->entries[ $type ] . '/' . $id;
 	}
 }

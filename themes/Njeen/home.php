@@ -7,8 +7,8 @@
 	<div class="entry-body">
 		<p>
 			You may want to take a look at
-			<?php echo Html::aLink( 'a page', 'Lorem ipsum', $Router->single( 'pages', 'lorem-ipsum' )); ?> or
-			<?php echo Html::aLink( 'an article', 'Hello World!', $Router->single( 'articles', 'hello-world' )); ?>.
+			<?php echo Html::aLink( 'a page', 'Lorem ipsum', $Router->pages( 'lorem-ipsum' )); ?> or
+			<?php echo Html::aLink( 'an article', 'Hello World!', $Router->articles( 'hello-world' )); ?>.
 		</p>
 		<p>
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit.

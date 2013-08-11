@@ -11,13 +11,24 @@
  *
  */
 
-trait Configurable {
+class Configurable implements ArrayAccess {
 
 	/**
 	 *
 	 */
 
-	protected $_vars = array( );
+	public $vars = array( );
+
+
+
+	/**
+	 *
+	 */
+
+	public function __isset( $name ) {
+
+		return $this->has( $name );
+	}
 
 
 
@@ -36,9 +47,20 @@ trait Configurable {
 	 *
 	 */
 
+	public function __set( $name, $value ) {
+
+		$this->set( $name, $value );
+	}
+
+
+
+	/**
+	 *
+	 */
+
 	public function has( $name ) {
 
-		return isset( $this->_vars[ $name ]);
+		return isset( $this->vars[ $name ]);
 	}
 
 
@@ -49,8 +71,8 @@ trait Configurable {
 
 	public function get( $name, $default = null ) {
 
-		return $this->has( $name )
-			? $this->_vars[ $name ]
+		return isset( $this->vars[ $name ])
+			? $this->vars[ $name ]
 			: $default;
 	}
 
@@ -60,13 +82,20 @@ trait Configurable {
 	 *
 	 */
 
-	public function set( $name, $value = null ) {
+	public function set( $name, $value ) {
 
-		if ( is_array( $name )) {
-			$this->_vars = array_merge( $this->_vars, $name );
-		} else {
-			$this->_vars[ $name ] = $value;
-		}
+		$this->vars[ $name ] = $value;
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function setAll( array $vars ) {
+
+		$this->vars = $vars;
 	}
 
 
@@ -77,6 +106,72 @@ trait Configurable {
 
 	public function setDefaults( array $defaults ) {
 
-		$this->_vars += $defaults;
+		$this->vars += $defaults;
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function merge( array $vars ) {
+
+		$this->vars = array_merge( $this->vars, $name );
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function remove( $name ) {
+
+		unset( $this->vars[ $name ]);
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function offsetExists( $offset ) {
+
+		return $this->has( $offset );
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function offsetGet( $offset ) {
+
+		return $this->get( $offset );
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function offsetSet( $offset, $value ) {
+
+		$this->set( $offset, $value );
+	}
+
+
+
+	/**
+	 *
+	 */
+
+	public function offsetUnset( $offset ) {
+
+		$this->remove( $offset );
 	}
 }

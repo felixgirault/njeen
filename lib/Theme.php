@@ -11,11 +11,7 @@
  *
  */
 
-class Theme {
-
-	use Configurable;
-
-
+class Theme extends Configurable {
 
 	/**
 	 *
@@ -89,7 +85,7 @@ class Theme {
 
 	public function part( $___path, array $___vars = array( )) {
 
-		extract( array_merge( $this->_vars, $___vars ), EXTR_SKIP );
+		extract( array_merge( $this->vars, $___vars ), EXTR_SKIP );
 		ob_start( );
 
 		include $this->path( $___path . '.php' );

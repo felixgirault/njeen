@@ -47,6 +47,8 @@ class Html {
 
 	public static function tag( $name, $contents = '', array $attributes = array( )) {
 
+		// attributes
+
 		$attributesString = '';
 
 		foreach ( $attributes as $attrName => $attrValue ) {
@@ -60,6 +62,8 @@ class Html {
 
 			$attributesString .= ' ' . $attrName .'="' . $attrValue . '"';
 		}
+
+		// tag
 
 		$tag = '<' . $name . $attributesString;
 

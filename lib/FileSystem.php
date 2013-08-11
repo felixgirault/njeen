@@ -32,7 +32,7 @@ class FileSystem {
 
 	public static function readFile( $path ) {
 
-		return file_get_contents( $path ) ?: 'toto';
+		return file_get_contents( $path ) ?: '';
 	}
 
 
