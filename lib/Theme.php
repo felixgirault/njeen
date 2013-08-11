@@ -8,13 +8,15 @@
 
 
 /**
- *
+ *	Theme.
  */
 
 class Theme extends Configurable {
 
 	/**
+	 *	Theme name.
 	 *
+	 *	@var string
 	 */
 
 	public $name = '';
@@ -22,7 +24,9 @@ class Theme extends Configurable {
 
 
 	/**
+	 *	Constructor.
 	 *
+	 *	@param string $name Theme name.
 	 */
 
 	public function __construct( $name ) {
@@ -41,7 +45,10 @@ class Theme extends Configurable {
 
 
 	/**
+	 *	Returns the path to a file inside the theme directory.
 	 *
+	 *	@param string $file File path relatively to the theme directory.
+	 *	@return string File path.
 	 */
 
 	public function path( $file = false ) {
@@ -58,7 +65,10 @@ class Theme extends Configurable {
 
 
 	/**
+	 *	Returns the URL of a file inside the theme directory.
 	 *
+	 *	@param string $file File URL relatively to the theme directory.
+	 *	@return string File URL.
 	 */
 
 	public function url( $file ) {
@@ -69,7 +79,10 @@ class Theme extends Configurable {
 
 
 	/**
+	 *	Tells if a part exists.
 	 *
+	 *	@param string $path Part path.
+	 *	@return If the part exists.
 	 */
 
 	public function hasPart( $path ) {
@@ -80,7 +93,11 @@ class Theme extends Configurable {
 
 
 	/**
+	 *	Renders and returns a part.
 	 *
+	 *	@param string $___path Part path.
+	 *	@param array $___vars Additional vars to make available in the part.
+	 *	@return string Rendered part.
 	 */
 
 	public function part( $___path, array $___vars = array( )) {

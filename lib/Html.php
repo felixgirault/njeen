@@ -1,13 +1,22 @@
 <?php
 
 /**
- *
+ *	@author Félix Girault <felix.girault@gmail.com>
+ *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
+ */
+
+
+
+/**
+ *	An utility class to build HTML tags.
  */
 
 class Html {
 
 	/**
+	 *	A list of self-closing HTML tags.
 	 *
+	 *	@var array
 	 */
 
 	public static $selfClosingTags = array(
@@ -18,7 +27,12 @@ class Html {
 
 
 	/**
+	 *	Builds and return an <a> tag.
 	 *
+	 *	@param string $text Link text.
+	 *	@param string $url Link URL.
+	 *	@param array $attributes HTML attributes.
+	 *	@return string Tag.
 	 */
 
 	public static function link( $text, $url, array $attributes = array( )) {
@@ -30,7 +44,13 @@ class Html {
 
 
 	/**
+	 *	Builds and return an accessible <a> tag.
 	 *
+	 *	@param string $text Link text.
+	 *	@param string $title Link title.
+	 *	@param string $url Link URL.
+	 *	@param array $attributes HTML attributes.
+	 *	@return string Tag.
 	 */
 
 	public static function aLink( $text, $title, $url, array $attributes = array( )) {
@@ -42,7 +62,12 @@ class Html {
 
 
 	/**
+	 *	Builds and return an HTML tag.
 	 *
+	 *	@param string $name Tag name.
+	 *	@param string $contents Tag contents.
+	 *	@param array $attributes Tag attributes.
+	 *	@return string Tag.
 	 */
 
 	public static function tag( $name, $contents = '', array $attributes = array( )) {

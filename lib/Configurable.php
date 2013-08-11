@@ -14,7 +14,9 @@
 class Configurable implements ArrayAccess {
 
 	/**
+	 *	Variables.
 	 *
+	 *	@var array
 	 */
 
 	public $vars = array( );
@@ -22,7 +24,7 @@ class Configurable implements ArrayAccess {
 
 
 	/**
-	 *
+	 *	@see has( )
 	 */
 
 	public function __isset( $name ) {
@@ -33,7 +35,7 @@ class Configurable implements ArrayAccess {
 
 
 	/**
-	 *
+	 *	@see get( )
 	 */
 
 	public function __get( $name ) {
@@ -44,7 +46,7 @@ class Configurable implements ArrayAccess {
 
 
 	/**
-	 *
+	 *	@see set( )
 	 */
 
 	public function __set( $name, $value ) {
@@ -55,7 +57,10 @@ class Configurable implements ArrayAccess {
 
 
 	/**
+	 *	Tells if a variable is available.
 	 *
+	 *	@param string $name Variable name.
+	 *	@param boolean If the variable is available.
 	 */
 
 	public function has( $name ) {
@@ -66,7 +71,11 @@ class Configurable implements ArrayAccess {
 
 
 	/**
+	 *	Returns a variable.
 	 *
+	 *	@param string $name Variable name.
+	 *	@param mixed $default Default value if the variable doesn't exist.
+	 *	@return mixed Variable value.
 	 */
 
 	public function get( $name, $default = null ) {
@@ -79,7 +88,10 @@ class Configurable implements ArrayAccess {
 
 
 	/**
+	 *	Sets a variable.
 	 *
+	 *	@param string $name Variable name.
+	 *	@param mixed $value Variable value.
 	 */
 
 	public function set( $name, $value ) {
@@ -101,7 +113,9 @@ class Configurable implements ArrayAccess {
 
 
 	/**
+	 *	Removes a variable.
 	 *
+	 *	@param string $name Variable name.
 	 */
 
 	public function setDefaults( array $defaults ) {
@@ -112,7 +126,9 @@ class Configurable implements ArrayAccess {
 
 
 	/**
+	 *	Removes a variable.
 	 *
+	 *	@param string $name Variable name.
 	 */
 
 	public function merge( array $vars ) {
@@ -123,7 +139,9 @@ class Configurable implements ArrayAccess {
 
 
 	/**
+	 *	Removes a variable.
 	 *
+	 *	@param string $name Variable name.
 	 */
 
 	public function remove( $name ) {
@@ -134,7 +152,7 @@ class Configurable implements ArrayAccess {
 
 
 	/**
-	 *
+	 *	@see has( )
 	 */
 
 	public function offsetExists( $offset ) {
@@ -145,7 +163,7 @@ class Configurable implements ArrayAccess {
 
 
 	/**
-	 *
+	 *	@see get( )
 	 */
 
 	public function offsetGet( $offset ) {
@@ -156,7 +174,7 @@ class Configurable implements ArrayAccess {
 
 
 	/**
-	 *
+	 *	@see set( )
 	 */
 
 	public function offsetSet( $offset, $value ) {
@@ -167,7 +185,7 @@ class Configurable implements ArrayAccess {
 
 
 	/**
-	 *
+	 *	@see remove( )
 	 */
 
 	public function offsetUnset( $offset ) {

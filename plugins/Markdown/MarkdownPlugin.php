@@ -1,7 +1,8 @@
 <?php
 
 /**
- *
+ *	@author Félix Girault <felix.girault@gmail.com>
+ *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
 require_once dirname( __FILE__ ) . NJ_DS . 'vendor' . NJ_DS . 'autoload.php';
@@ -14,13 +15,13 @@ use dflydev\markdown\MarkdownExtraParser;
  *
  */
 
-class MarkdownPlugin {
+class MarkdownPlugin implements Plugin {
 
 	/**
 	 *
 	 */
 
-	public static function setup( &$Di ) {
+	public function setup( &$Di ) {
 
 		$Di->set( 'Markdown.Parser', Di::unique( function( $Di ) {
 			return new MarkdownExtraParser( );

@@ -8,7 +8,7 @@
 
 
 /**
- *
+ *	A blog entry.
  */
 
 class Entry extends Configurable {

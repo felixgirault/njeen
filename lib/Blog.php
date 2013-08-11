@@ -83,7 +83,7 @@ class Blog extends Configurable {
 				$id = $Request->id;
 
 				if ( $Entries->exists( $type, $id )) {
-					$Entry = $Entries->loadCompiled( $type, $id );
+					$Entry = $Entries->load( $type, $id );
 					$this->_Theme->set( 'Entry', $Entry );
 
 					$page = $this->_Theme->hasPart( "$type/single" )

@@ -8,7 +8,7 @@
 
 
 /**
- *
+ *	Enumeration of request types.
  */
 
 class RequestType {
@@ -28,7 +28,9 @@ class RequestType {
 class Request extends Configurable {
 
 	/**
+	 *	Request type.
 	 *
+	 *	@var string
 	 */
 
 	protected $_type = '';
@@ -36,7 +38,10 @@ class Request extends Configurable {
 
 
 	/**
+	 *	Constructor.
 	 *
+	 *	@param string $type Request type.
+	 *	@param array $vars Request vars.
 	 */
 
 	public function __construct( $type, array $vars = array( )) {
@@ -48,7 +53,9 @@ class Request extends Configurable {
 
 
 	/**
+	 *	Returns the request type.
 	 *
+	 *	@return string Type.
 	 */
 
 	public function type( ) {
@@ -59,7 +66,9 @@ class Request extends Configurable {
 
 
 	/**
+	 *	Builds and returns a Request for the home page.
 	 *
+	 *	@return Request Request.
 	 */
 
 	public static function home( ) {
@@ -70,7 +79,10 @@ class Request extends Configurable {
 
 
 	/**
+	 *	Builds and returns a Request for an entries index page.
 	 *
+	 *	@param string $type Entry type.
+	 *	@return Request Request.
 	 */
 
 	public static function index( $type ) {
@@ -81,7 +93,11 @@ class Request extends Configurable {
 
 
 	/**
+	 *	Builds and returns a Request for a single entry page.
 	 *
+	 *	@param string $type Entry type.
+	 *	@param string $id Entry id.
+	 *	@return Request Request.
 	 */
 
 	public static function single( $type, $id ) {
@@ -92,7 +108,10 @@ class Request extends Configurable {
 
 
 	/**
+	 *	Builds and returns a Request for an error page.
 	 *
+	 *	@param int $code HTTP code.
+	 *	@return Request Request.
 	 */
 
 	public static function error( $code ) {

@@ -1,19 +1,22 @@
 <?php
 
 /**
- *
+ *	@author Félix Girault <felix.girault@gmail.com>
+ *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
 
 
 /**
- *
+ *	Settings.
  */
 
 class Settings extends Configurable {
 
 	/**
+	 *	Settings file path.
 	 *
+	 *	@var string
 	 */
 
 	protected $_path;
@@ -21,7 +24,10 @@ class Settings extends Configurable {
 
 
 	/**
+	 *	Constructor.
 	 *
+	 *	@param string $path File path.
+	 *	@param boolean $load Whether to load the file or not.
 	 */
 
 	public function __construct( $path, $load = true ) {
@@ -36,7 +42,7 @@ class Settings extends Configurable {
 
 
 	/**
-	 *
+	 *	Loads settings.
 	 */
 
 	public function load( ) {
@@ -47,18 +53,22 @@ class Settings extends Configurable {
 
 
 	/**
+	 *	Saves settings.
 	 *
+	 *	@return boolean If the settings were succesfully saved.
 	 */
 
 	public function save( ) {
 
-		FileSystem::writeJson( $this->_path, $this->vars );
+		return FileSystem::writeJson( $this->_path, $this->vars );
 	}
 
 
 
 	/**
+	 *	Returns the last modification time of the settings file.
 	 *
+	 *	@return int Modification time.
 	 */
 
 	public function lastModification( ) {

@@ -8,7 +8,7 @@
 
 
 /**
- *
+ *	A compiler for entries.
  */
 
 class Compiler {
@@ -24,7 +24,9 @@ class Compiler {
 
 
 	/**
+	 *	Constructor.
 	 *
+	 *	@param array $steps Compilation steps.
 	 */
 
 	public function __construct( array $steps = array( )) {
@@ -35,7 +37,9 @@ class Compiler {
 
 
 	/**
+	 *	Adds a new compilation step.
 	 *
+	 *	@param Closure( &Entry ) $Step Compilation step.
 	 */
 
 	public function addStep( Closure $Step ) {
@@ -46,7 +50,9 @@ class Compiler {
 
 
 	/**
+	 *	Compiles the given entry.
 	 *
+	 *	@param Entry $Entry Entry to compile.
 	 */
 
 	public function compile( &$Entry ) {

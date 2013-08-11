@@ -14,7 +14,9 @@
 class Njeen {
 
 	/**
+	 *	Dependency injection container.
 	 *
+	 *	@var Di
 	 */
 
 	protected static $_Di = null;
@@ -22,7 +24,7 @@ class Njeen {
 
 
 	/**
-	 *
+	 *	Runs Njeen.
 	 */
 
 	public static function run( ) {
@@ -44,7 +46,7 @@ class Njeen {
 
 
 	/**
-	 *
+	 *	Configures dependency injection.
 	 */
 
 	protected static function _setupDi( ) {
@@ -85,24 +87,26 @@ class Njeen {
 
 
 	/**
-	 *
+	 *	Loads plugins.
 	 */
 
 	protected static function _loadPlugins( ) {
 
 		$Directory = new DirectoryIterator( NJ_PLUGINS );
 
-		foreach ( $Directory as $Plugin ) {
-			if ( $Plugin->isDir( )) {
-				$name = $Plugin->getBasename( );
+		foreach ( $Directory as $File ) {
+			if ( $File->isDir( )) {
+				$name = $File->getBasename( );
 				$class = $name . 'Plugin';
-				$path = $Plugin->getPath( )
+				$path = $File->getPath( )
 					. NJ_DS . $name
 					. NJ_DS . $class . '.php';
 
 				if ( file_exists( $path )) {
 					require_once( $path );
-					$class::setup( self::$_Di );
+
+					$Plugin = new $class( );
+					$Plugin->setup( self::$_Di );
 				}
 			}
 		}
@@ -111,7 +115,7 @@ class Njeen {
 
 
 	/**
-	 *
+	 *	Compiles entries if necessary.
 	 */
 
 	protected static function _compile( ) {

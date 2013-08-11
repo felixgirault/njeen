@@ -57,7 +57,9 @@ class Router extends Configurable {
 			);
 		}
 
-		return $this->single( $type, array_shift( $arguments ));
+		return count( $arguments )
+			? $this->single( $type, array_shift( $arguments ))
+			: $this->index( $type );
 	}
 
 
@@ -94,18 +96,7 @@ class Router extends Configurable {
 
 
 	/**
-	 *
-	 */
-
-	public function entryTypes( ) {
-
-		return array_keys( $this->entries );
-	}
-
-
-
-	/**
-	 *
+	 *	Returns an URL pointing to the home page.
 	 */
 
 	public function home( ) {
@@ -116,7 +107,10 @@ class Router extends Configurable {
 
 
 	/**
+	 *	Returns an URL pointing to a entries index.
 	 *
+	 *	@param string $type Entry type.
+	 *	@return string URL.
 	 */
 
 	public function index( $type ) {
@@ -127,7 +121,11 @@ class Router extends Configurable {
 
 
 	/**
+	 *	Returns an URL pointing to a single entry.
 	 *
+	 *	@param string $type Entry type.
+	 *	@param string $id Entry id.
+	 *	@return string URL.
 	 */
 
 	public function single( $type, $id ) {
