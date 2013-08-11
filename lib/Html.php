@@ -30,14 +30,14 @@ class Html {
 	 *	Builds and return an <a> tag.
 	 *
 	 *	@param string $text Link text.
-	 *	@param string $url Link URL.
+	 *	@param string $href Link URL.
 	 *	@param array $attributes HTML attributes.
 	 *	@return string Tag.
 	 */
 
-	public static function link( $text, $url, array $attributes = array( )) {
+	public static function link( $text, $href, array $attributes = array( )) {
 
-		$attributes['href'] = $url;
+		$attributes['href'] = $href;
 		return self::tag( 'a', $text, $attributes );
 	}
 
@@ -48,15 +48,47 @@ class Html {
 	 *
 	 *	@param string $text Link text.
 	 *	@param string $title Link title.
-	 *	@param string $url Link URL.
+	 *	@param string $href Link URL.
 	 *	@param array $attributes HTML attributes.
 	 *	@return string Tag.
 	 */
 
-	public static function aLink( $text, $title, $url, array $attributes = array( )) {
+	public static function aLink( $text, $title, $href, array $attributes = array( )) {
 
 		$attributes['title'] = $title;
-		return self::link( $text, $url, $attributes );
+		return self::link( $text, $href, $attributes );
+	}
+
+
+
+	/**
+	 *	Builds and return an <img> tag.
+	 *
+	 *	@param string $src Image URL.
+	 *	@param array $attributes HTML attributes.
+	 *	@return string Tag.
+	 */
+
+	public static function image( $src, array $attributes = array( )) {
+
+		$attributes['src'] = $src;
+		return self::tag( 'img', $text, $attributes );
+	}
+
+
+
+	/**
+	 *	Builds and return an accessible <img> tag.
+	 *
+	 *	@param string $src Image URL.
+	 *	@param array $attributes HTML attributes.
+	 *	@return string Tag.
+	 */
+
+	public static function aImage( $alt, $src, array $attributes = array( )) {
+
+		$attributes['alt'] = $alt;
+		return self::image( $src, $attributes );
 	}
 
 
