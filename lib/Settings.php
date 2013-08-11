@@ -63,6 +63,8 @@ class Settings extends Configurable {
 
 	public function lastModification( ) {
 
-		return filemtime( $this->_path ) ?: 0;
+		return file_exists( $this->_path )
+			? filemtime( $this->_path )
+			: 0;
 	}
 }

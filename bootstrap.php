@@ -1,9 +1,5 @@
 <?php
 
-require_once 'vendor/autoload.php';
-
-
-
 /**
  *	Paths.
  */
@@ -38,6 +34,7 @@ unset( $path, $http );
  */
 
 spl_autoload_register( function( $className ) {
+
 	$path = NJ_LIB . str_replace( '\\', NJ_DS, $className ) . '.php';
 
 	if ( file_exists( $path )) {

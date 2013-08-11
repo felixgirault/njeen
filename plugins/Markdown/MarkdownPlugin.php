@@ -4,6 +4,8 @@
  *
  */
 
+require_once dirname( __FILE__ ) . NJ_DS . 'vendor' . NJ_DS . 'autoload.php';
+
 use dflydev\markdown\MarkdownExtraParser;
 
 

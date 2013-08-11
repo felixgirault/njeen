@@ -116,8 +116,10 @@ class Njeen {
 
 	protected static function _compile( ) {
 
-		self::$_Di->get( 'Njeen.Entries' )->compile(
-			self::$_Di->get( 'Njeen.Compiler' )
-		);
+		$Entries = self::$_Di->get( 'Njeen.Entries' );
+
+		if ( $Entries->shouldCompile( )) {
+			$Entries->compile( self::$_Di->get( 'Njeen.Compiler' ));
+		}
 	}
 }

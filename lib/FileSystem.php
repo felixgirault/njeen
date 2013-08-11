@@ -8,26 +8,33 @@
 
 
 /**
+ *	A simple interface to the file system.
  *
+ *	@package Njeen
  */
 
 class FileSystem {
 
 	/**
+	 *	Ensures that a directory exists by creating it if necessary.
 	 *
+	 *	@param string $path Path to the directory.
 	 */
 
-	public static function ensureDirectoryExists( $directory ) {
+	public static function ensureDirectoryExists( $path ) {
 
-		if ( !is_dir( $directory )) {
-			mkdir( $directory, 0777, true );
+		if ( !is_dir( $path )) {
+			mkdir( $path, 0777, true );
 		}
 	}
 
 
 
 	/**
+	 *	Writes contents into a file.
 	 *
+	 *	@param string $path Path to the file.
+	 *	@return string File contents.
 	 */
 
 	public static function readFile( $path ) {
@@ -52,7 +59,11 @@ class FileSystem {
 
 
 	/**
+	 *	Writes contents into a file.
 	 *
+	 *	@param string $path Path to the file.
+	 *	@param string $contents Contents.
+	 *	@return boolean If the file was written succesfully.
 	 */
 
 	public static function writeFile( $path, $contents ) {
@@ -97,10 +108,17 @@ class FileSystem {
 
 	/**
 	 *	Saves a JSON document.
+	 *
+	 *	@param string $path Path to the file.
+	 *	@param mixed $data Json data.
 	 */
 
 	public static function writeJson( $path, $data ) {
 
-		FileSystem::writeFile( $path, json_encode( $data, JSON_PRETTY_PRINT ));
+		$json = json_encode( $data, JSON_PRETTY_PRINT );
+
+		return ( $json === false )
+			? false
+			: FileSystem::writeFile( $path, $json );
 	}
 }
