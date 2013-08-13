@@ -5,10 +5,16 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
+namespace Njeen;
+
+use Njeen\Utility\FileSystem;
+
 
 
 /**
  *	Settings.
+ *
+ *	@package Njeen
  */
 
 class Settings extends Configurable {

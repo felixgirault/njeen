@@ -5,10 +5,16 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
+namespace Njeen\Routing;
+
+use Njeen\Configurable;
+
 
 
 /**
+ *	Router.
  *
+ *	@package Njeen.Routing
  */
 
 class Router extends Configurable {

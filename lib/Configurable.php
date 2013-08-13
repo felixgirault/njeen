@@ -5,10 +5,16 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
+namespace Njeen;
+
+use ArrayAccess;
+
 
 
 /**
+ *	Configurable.
  *
+ *	@package Njeen
  */
 
 class Configurable implements ArrayAccess {

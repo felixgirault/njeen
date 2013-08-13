@@ -5,10 +5,16 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
+namespace Njeen\Entry;
+
+use Closure;
+
 
 
 /**
  *	A compiler for entries.
+ *
+ *	@package Njeen.Entry
  */
 
 class Compiler {

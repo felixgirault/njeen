@@ -5,8 +5,10 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
-require_once dirname( __FILE__ ) . NJ_DS . 'vendor' . NJ_DS . 'autoload.php';
+namespace Njeen\Plugin\Markdown;
 
+use Njeen\Plugin as NjeenPlugin;
+use Njeen\Di\Container as Di;
 use dflydev\markdown\MarkdownExtraParser;
 
 
@@ -15,13 +17,17 @@ use dflydev\markdown\MarkdownExtraParser;
  *
  */
 
-class MarkdownPlugin implements Plugin {
+class Plugin implements NjeenPlugin {
 
 	/**
 	 *
 	 */
 
 	public function setup( &$Di ) {
+
+		require_once dirname( __FILE__ )
+			. NJ_DS . 'vendor'
+			. NJ_DS . 'autoload.php';
 
 		$Di->set( 'Markdown.Parser', Di::unique( function( $Di ) {
 			return new MarkdownExtraParser( );

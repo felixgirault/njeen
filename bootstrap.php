@@ -1,5 +1,9 @@
 <?php
 
+use Njeen\Utility\Autoload;
+
+
+
 /**
  *	Paths.
  */
@@ -33,11 +37,7 @@ unset( $path, $http );
  *	Autoload.
  */
 
-spl_autoload_register( function( $className ) {
+require_once NJ_LIB . 'Utility' . NJ_DS . 'Autoload.php';
 
-	$path = NJ_LIB . str_replace( '\\', NJ_DS, $className ) . '.php';
-
-	if ( file_exists( $path )) {
-		require_once $path;
-	}
-});
+Autoload::setup( NJ_LIB, 'Njeen' );
+Autoload::setup( NJ_PLUGINS, 'Njeen\\Plugin' );

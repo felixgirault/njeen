@@ -5,14 +5,21 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
+namespace Njeen\Di;
+
+use Njeen\Configurable;
+use Closure;
+
 
 
 /**
  *	A simple dependency injection container.
  *	Inspired by Pimple (https://github.com/fabpot/Pimple).
+ *
+ *	@package Njeen.Di
  */
 
-class Di extends Configurable {
+class Container extends Configurable {
 
 	/**
 	 *	Property filters.
@@ -104,11 +111,11 @@ class Di extends Configurable {
 
 	public static function unique( Closure $Factory ) {
 
-		return function( $Di ) use ( $Factory ) {
+		return function( $Container ) use ( $Factory ) {
 			static $result = null;
 
 			if ( $result === null ) {
-				$result = $Factory( $Di );
+				$result = $Factory( $Container );
 			}
 
 			return $result;
@@ -126,7 +133,7 @@ class Di extends Configurable {
 
 	public static function closure( Closure $Closure ) {
 
-		return function( $Di ) use ( $Closure ) {
+		return function( ) use ( $Closure ) {
 			return $Closure;
 		};
 	}

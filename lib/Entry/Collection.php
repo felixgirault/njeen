@@ -5,13 +5,20 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
+namespace Njeen\Entry;
+
+use Njeen\Settings;
+use DirectoryIterator;
+
 
 
 /**
  *	A collection of entries.
+ *
+ *	@package Njeen.Entry
  */
 
-class EntryCollection {
+class Collection {
 
 	/**
 	 *	Entry types.
@@ -51,6 +58,7 @@ class EntryCollection {
 	 */
 
 	public function __construct( array $types, $treshold = 60 ) {
+
 		$this->_types = $types;
 		$this->_treshold = $treshold;
 

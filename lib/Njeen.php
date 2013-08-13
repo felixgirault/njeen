@@ -5,10 +5,21 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
+namespace Njeen;
+
+use Njeen\Di\Container as Di;
+use Njeen\Entry\Collection as EntryCollection;
+use Njeen\Entry\Compiler as EntryCompiler;
+use Njeen\Routing\Router;
+use Njeen\Utility\Html;
+use DirectoryIterator;
+
 
 
 /**
  *
+ *
+ *	@package Njeen
  */
 
 class Njeen {
@@ -66,7 +77,7 @@ class Njeen {
 				);
 			}),
 			'Njeen.Compiler' => Di::unique( function( $Di ) {
-				return new Compiler( );
+				return new EntryCompiler( );
 			}),
 			'Njeen.Entries' => Di::unique( function( $Di ) {
 				return new EntryCollection(
@@ -74,6 +85,9 @@ class Njeen {
 						$Di->get( 'Njeen.Settings' )->router['entries']
 					)
 				);
+			}),
+			'Njeen.Html' => Di::unique( function( $Di ) {
+				return new Html( );
 			}),
 			'Njeen.Blog' => Di::unique( function( $Di ) {
 				return new Blog(
@@ -97,13 +111,14 @@ class Njeen {
 		foreach ( $Directory as $File ) {
 			if ( $File->isDir( )) {
 				$name = $File->getBasename( );
-				$class = $name . 'Plugin';
 				$path = $File->getPath( )
 					. NJ_DS . $name
-					. NJ_DS . $class . '.php';
+					. NJ_DS . 'Plugin.php';
 
 				if ( file_exists( $path )) {
 					require_once( $path );
+
+					$class = "Njeen\\Plugin\\$name\\Plugin";
 
 					$Plugin = new $class( );
 					$Plugin->setup( self::$_Di );

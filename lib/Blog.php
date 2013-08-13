@@ -5,12 +5,20 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
-use dflydev\markdown\MarkdownExtraParser;
+namespace Njeen;
+
+use Njeen\Routing\Router;
+use Njeen\Routing\Request;
+use Njeen\Routing\RequestType;
+use Njeen\Entry\Collection as EntryCollection;
+use Njeen\Utility\Html;
 
 
 
 /**
+ *	Blog.
  *
+ *	@package Njeen
  */
 
 class Blog extends Configurable {
@@ -44,6 +52,7 @@ class Blog extends Configurable {
 		$this->_Theme->vars = array(
 			'Blog' => $this,
 			'Theme' => $this->_Theme,
+			'Html' => new Html( ),
 			'Router' => $Router,
 			'Entries' => $Entries
 		);

@@ -5,12 +5,16 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
+namespace Njeen\Utility;
+
+use SplFileObject;
+
 
 
 /**
  *	A simple interface to the file system.
  *
- *	@package Njeen
+ *	@package Njeen.Utility
  */
 
 class FileSystem {

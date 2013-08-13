@@ -5,10 +5,14 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
+namespace Njeen\Utility;
+
 
 
 /**
  *	An utility class to build HTML tags.
+ *
+ *	@package Njeen.Utility
  */
 
 class Html {
@@ -19,7 +23,7 @@ class Html {
 	 *	@var array
 	 */
 
-	public static $selfClosingTags = array(
+	protected $_selfClosingTags = array(
 		'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input',
 		'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
 	);
@@ -35,10 +39,10 @@ class Html {
 	 *	@return string Tag.
 	 */
 
-	public static function link( $text, $href, array $attributes = array( )) {
+	public function link( $text, $href, array $attributes = array( )) {
 
 		$attributes['href'] = $href;
-		return self::tag( 'a', $text, $attributes );
+		return $this->tag( 'a', $text, $attributes );
 	}
 
 
@@ -53,10 +57,10 @@ class Html {
 	 *	@return string Tag.
 	 */
 
-	public static function aLink( $text, $title, $href, array $attributes = array( )) {
+	public function aLink( $text, $title, $href, array $attributes = array( )) {
 
 		$attributes['title'] = $title;
-		return self::link( $text, $href, $attributes );
+		return $this->link( $text, $href, $attributes );
 	}
 
 
@@ -69,10 +73,10 @@ class Html {
 	 *	@return string Tag.
 	 */
 
-	public static function image( $src, array $attributes = array( )) {
+	public function image( $src, array $attributes = array( )) {
 
 		$attributes['src'] = $src;
-		return self::tag( 'img', $text, $attributes );
+		return $this->tag( 'img', $text, $attributes );
 	}
 
 
@@ -85,10 +89,10 @@ class Html {
 	 *	@return string Tag.
 	 */
 
-	public static function aImage( $alt, $src, array $attributes = array( )) {
+	public function aImage( $alt, $src, array $attributes = array( )) {
 
 		$attributes['alt'] = $alt;
-		return self::image( $src, $attributes );
+		return $this->image( $src, $attributes );
 	}
 
 
@@ -102,7 +106,7 @@ class Html {
 	 *	@return string Tag.
 	 */
 
-	public static function tag( $name, $contents = '', array $attributes = array( )) {
+	public function tag( $name, $contents = '', array $attributes = array( )) {
 
 		// attributes
 
@@ -124,7 +128,7 @@ class Html {
 
 		$tag = '<' . $name . $attributesString;
 
-		if ( in_array( $name, self::$selfClosingTags )) {
+		if ( in_array( $name, $this->_selfClosingTags )) {
 			$tag .= ' />';
 		} else {
 			$tag .= '>' . $contents . '</' . $name . '>';

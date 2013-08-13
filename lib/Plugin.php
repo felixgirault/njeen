@@ -5,10 +5,14 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
+namespace Njeen;
+
 
 
 /**
  *	An interface for plugins.
+ *
+ *	@package Njeen
  */
 
 interface Plugin {
