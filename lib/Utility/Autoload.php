@@ -29,7 +29,7 @@ class Autoload {
 		$basePath = rtrim( $basePath, NJ_DS );
 
 		spl_autoload_register( function( $className ) use ( $basePath, $prefix ) {
-			if ( strpos( $className, $prefix ) === 0 ) {
+			if ( $prefix && strpos( $className, $prefix ) === 0 ) {
 				$className = substr( $className, strlen( $prefix ));
 			}
 

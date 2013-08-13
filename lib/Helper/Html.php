@@ -5,27 +5,32 @@
  *	@license FreeBSD License (http://opensource.org/licenses/BSD-2-Clause)
  */
 
-namespace Njeen\Utility;
+namespace Njeen\Helper;
+
+use Njeen\Configurable;
 
 
 
 /**
- *	An utility class to build HTML tags.
+ *	A helper class to build HTML tags.
  *
- *	@package Njeen.Utility
+ *	@package Njeen.Helper
  */
 
-class Html {
+class Html extends Configurable {
 
 	/**
-	 *	A list of self-closing HTML tags.
 	 *
-	 *	@var array
 	 */
 
-	protected $_selfClosingTags = array(
-		'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input',
-		'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
+	public $vars = array(
+		// a list of self-closing HTML tags
+		'selfClosingTags' => array(
+			'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input',
+			'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
+		),
+		// the date format for time( )
+		'dateFormat' => 'F j, Y'
 	);
 
 
@@ -76,7 +81,7 @@ class Html {
 	public function image( $src, array $attributes = array( )) {
 
 		$attributes['src'] = $src;
-		return $this->tag( 'img', $text, $attributes );
+		return $this->tag( 'img', $attributes );
 	}
 
 
@@ -98,7 +103,34 @@ class Html {
 
 
 	/**
+	 *	Builds and return an <img> tag.
+	 *
+	 *	@param string $src Image URL.
+	 *	@param array $attributes HTML attributes.
+	 *	@return string Tag.
+	 */
+
+	public function time( $timestamp, $pubdate = true, array $attributes = array( )) {
+
+		$attributes['datetime'] = date( DATE_W3C, $timestamp );
+
+		if ( $pubdate ) {
+			$attributes['pubdate'] = 'pubdate';
+		}
+
+		return $this->tag(
+			'time',
+			date( $this->dateFormat, $timestamp ),
+			$attributes
+		);
+	}
+
+
+
+	/**
 	 *	Builds and return an HTML tag.
+	 *	If the tag has no contents, attributes can be passed as the second
+	 *	parameter.
 	 *
 	 *	@param string $name Tag name.
 	 *	@param string $contents Tag contents.
@@ -107,6 +139,11 @@ class Html {
 	 */
 
 	public function tag( $name, $contents = '', array $attributes = array( )) {
+
+		if ( is_array( $contents )) {
+			$attributes = $contents;
+			$contents = '';
+		}
 
 		// attributes
 
@@ -128,7 +165,7 @@ class Html {
 
 		$tag = '<' . $name . $attributesString;
 
-		if ( in_array( $name, $this->_selfClosingTags )) {
+		if ( in_array( $name, $this->selfClosingTags )) {
 			$tag .= ' />';
 		} else {
 			$tag .= '>' . $contents . '</' . $name . '>';

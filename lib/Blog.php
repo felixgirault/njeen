@@ -11,7 +11,6 @@ use Njeen\Routing\Router;
 use Njeen\Routing\Request;
 use Njeen\Routing\RequestType;
 use Njeen\Entry\Collection as EntryCollection;
-use Njeen\Utility\Html;
 
 
 
@@ -47,20 +46,12 @@ class Blog extends Configurable {
 	 *
 	 */
 
-	public function page( Router $Router, EntryCollection $Entries ) {
-
-		$this->_Theme->vars = array(
-			'Blog' => $this,
-			'Theme' => $this->_Theme,
-			'Html' => new Html( ),
-			'Router' => $Router,
-			'Entries' => $Entries
-		);
+	public function page( Request $Request, EntryCollection $Entries ) {
 
 		return $this->_Theme->part(
 			'layout',
 			array(
-				'page' => $this->_renderPage( $Router->request( ), $Entries )
+				'page' => $this->_renderPage( $Request, $Entries )
 			)
 		);
 	}

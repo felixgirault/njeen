@@ -14,12 +14,15 @@
 			<div class="container">
 				<p class="blog-title"><?php echo $Html->aLink( $Blog->title, 'Blog home', $Router->home( )); ?></p>
 
-				<nav class="blog-menu">
-					<ul>
-						<li><?php echo $Html->aLink( 'Articles', 'All articles', $Router->articles( )); ?></li>
-						<li><?php echo $Html->aLink( 'About', 'About Njeen', $Router->pages( 'about' )); ?></li>
-					</ul>
-				</nav>
+				<?php if ( $Menu->hasItems( )): ?>
+					<nav class="blog-menu">
+						<ul>
+							<?php foreach ( $Menu as $Item ): ?>
+								<li><?php echo $Html->aLink( $Item->text, $Item->title, $Item->url ); ?></li>
+							<?php endforeach; ?>
+						</ul>
+					</nav>
+				<?php endif; ?>
 			</div>
 		</header>
 

@@ -8,16 +8,16 @@
 namespace Njeen;
 
 use Njeen\Di\Container as Di;
+use Njeen\Plugin\Collection as PluginCollection;
 use Njeen\Entry\Collection as EntryCollection;
 use Njeen\Entry\Compiler as EntryCompiler;
 use Njeen\Routing\Router;
-use Njeen\Utility\Html;
-use DirectoryIterator;
+use Njeen\Helper\Html;
 
 
 
 /**
- *
+ *	Njeen.
  *
  *	@package Njeen
  */
@@ -42,11 +42,12 @@ class Njeen {
 
 		try {
 			self::_setupDi( );
-			self::_loadPlugins( );
 			self::_compile( );
 
+			self::$_Di->get( 'Njeen.Plugins' )->load( self::$_Di );
+
 			echo self::$_Di->get( 'Njeen.Blog' )->page(
-				self::$_Di->get( 'Njeen.Router' ),
+				self::$_Di->get( 'Njeen.Router' )->request( ),
 				self::$_Di->get( 'Njeen.Entries' )
 			);
 		} catch ( Exception $Exception ) {
@@ -66,11 +67,6 @@ class Njeen {
 			'Njeen.Settings' => Di::unique( function( ) {
 				return new Settings( NJ_ROOT . 'settings.json' );
 			}),
-			'Njeen.Theme' => Di::unique( function( $Di ) {
-				return new Theme(
-					$Di->get( 'Njeen.Settings' )->theme
-				);
-			}),
 			'Njeen.Router' => Di::unique( function( $Di ) {
 				return new Router(
 					$Di->get( 'Njeen.Settings' )->router
@@ -86,45 +82,38 @@ class Njeen {
 					)
 				);
 			}),
+			'Njeen.Plugins' => Di::unique( function( $Di ) {
+				return new PluginCollection( );
+			}),
 			'Njeen.Html' => Di::unique( function( $Di ) {
 				return new Html( );
 			}),
+			'Njeen.Theme' => Di::unique( function( $Di ) {
+				$Theme = new Theme(
+					$Di->get( 'Njeen.Settings' )->theme
+				);
+
+				$Theme->setAll( array(
+					'Theme' => $Theme,
+					'Html' => $Di->get( 'Njeen.Html' ),
+					'Router' => $Di->get( 'Njeen.Router' ),
+					'Entries' => $Di->get( 'Njeen.Entries' )
+				));
+
+				return $Theme;
+			}),
 			'Njeen.Blog' => Di::unique( function( $Di ) {
-				return new Blog(
-					$Di->get( 'Njeen.Theme' ),
+				$Theme = $Di->get( 'Njeen.Theme' );
+				$Blog = new Blog(
+					$Theme,
 					$Di->get( 'Njeen.Settings' )->blog
 				);
+
+				$Theme->set( 'Blog', $Blog );
+
+				return $Blog;
 			})
 		));
-	}
-
-
-
-	/**
-	 *	Loads plugins.
-	 */
-
-	protected static function _loadPlugins( ) {
-
-		$Directory = new DirectoryIterator( NJ_PLUGINS );
-
-		foreach ( $Directory as $File ) {
-			if ( $File->isDir( )) {
-				$name = $File->getBasename( );
-				$path = $File->getPath( )
-					. NJ_DS . $name
-					. NJ_DS . 'Plugin.php';
-
-				if ( file_exists( $path )) {
-					require_once( $path );
-
-					$class = "Njeen\\Plugin\\$name\\Plugin";
-
-					$Plugin = new $class( );
-					$Plugin->setup( self::$_Di );
-				}
-			}
-		}
 	}
 
 

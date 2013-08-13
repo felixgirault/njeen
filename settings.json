@@ -20,5 +20,22 @@
 			"author": "authors",
 			"tags": "tags"
 		}
+	},
+	"menu": {
+		"Articles": {
+			"title": "All articles",
+			"route": {
+				"request": "index",
+				"type": "articles"
+			}
+		},
+		"About": {
+			"title": "About Njeen",
+			"type": "single",
+			"route": {
+				"type": "pages",
+				"id": "about"
+			}
+		}
 	}
 }
